@@ -1,6 +1,6 @@
 --[[
     ============================================================
-    COZY UI - MONOCHROME WIREFRAME EDITION (V4 FIXED MOBILE)
+    COZY UI - MONOCHROME WIREFRAME EDITION (V5 AUTO-RESPONSIVE)
     ============================================================
 ]]
 
@@ -65,6 +65,7 @@ function CozyUI:CreateWindow(config)
     window.Title = config.Name or "Cozy Hub"
     window.TabButtons = {}
     window.Pages = {}
+    window.CustomTabsCount = 0
     
     -- ScreenGui Setup
     local sgui = Instance.new("ScreenGui")
@@ -79,8 +80,6 @@ function CozyUI:CreateWindow(config)
     -- Main Window Frame
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = getRandomName()
-    mainFrame.Size = UDim2.new(0, 420, 0, 250)
-    mainFrame.Position = UDim2.new(0.5, -210, 0.5, -125)
     mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
@@ -96,22 +95,16 @@ function CozyUI:CreateWindow(config)
 
     -- Drag Header Bar
     local topBar = Instance.new("Frame")
-    topBar.Size = UDim2.new(1, 0, 0, 30)
-    topBar.Position = UDim2.new(0, 0, 0, 0)
     topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     topBar.BorderSizePixel = 0
     topBar.Parent = mainFrame
     
     local headerDivider = Instance.new("Frame")
-    headerDivider.Size = UDim2.new(1, 0, 0, 1)
-    headerDivider.Position = UDim2.new(0, 0, 1, 0)
     headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     headerDivider.BorderSizePixel = 0
     headerDivider.Parent = topBar
 
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -40, 1, 0)
-    titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = window.Title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -122,22 +115,18 @@ function CozyUI:CreateWindow(config)
     
     makeDraggable(mainFrame, topBar)
     
-    -- Navigation Frame Container (Fixed Left Side)
+    -- Navigation Frame Container
     local navFrame = Instance.new("Frame")
-    navFrame.Size = UDim2.new(0, 110, 1, -40)
-    navFrame.Position = UDim2.new(0, 10, 0, 38)
     navFrame.BackgroundTransparency = 1
     navFrame.Parent = mainFrame
     
     local navLayout = Instance.new("UIListLayout")
-    navLayout.Padding = UDim.new(0, 6) -- Visible spacing between navigation tabs
+    navLayout.Padding = UDim.new(0, 6)
     navLayout.FillDirection = Enum.FillDirection.Vertical
     navLayout.Parent = navFrame
     
     -- Main Element Container Frame
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -140, 1, -40)
-    container.Position = UDim2.new(0, 130, 0, 38)
     container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     container.BorderSizePixel = 0
     container.Parent = mainFrame
@@ -149,9 +138,10 @@ function CozyUI:CreateWindow(config)
     containerStroke.Parent = container
 
     window.NavFrame = navFrame
+    window.NavLayout = navLayout
     window.Container = container
     
-    -- Minimize/Maximize Button Setup
+    -- Minimize / Maximize Core Button
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 20, 0, 20)
     closeBtn.Position = UDim2.new(1, -25, 0, 5)
@@ -207,7 +197,68 @@ function CozyUI:CreateWindow(config)
         mainFrame.Visible = true
     end)
 
-    -- Build the permanent Native Executor Tab first
+    -- Dynamic PC vs. Mobile Screen Sizer Layout
+    local camera = Workspace.CurrentCamera
+    local function adjustLayoutSizes()
+        local viewportSize = camera.ViewportSize
+        if viewportSize.X <= 768 then
+            -- Mobile UI Boundaries
+            mainFrame.Size = UDim2.new(0, 390, 0, 245)
+            mainFrame.Position = UDim2.new(0.5, -195, 0.5, -122)
+            
+            topBar.Size = UDim2.new(1, 0, 0, 30)
+            topBar.Position = UDim2.new(0, 0, 0, 0)
+            
+            titleLabel.Size = UDim2.new(1, -40, 1, 0)
+            titleLabel.Position = UDim2.new(0, 10, 0, 0)
+            
+            headerDivider.Size = UDim2.new(1, 0, 0, 1)
+            headerDivider.Position = UDim2.new(0, 0, 1, -1)
+            
+            navFrame.Size = UDim2.new(1, -20, 0, 30)
+            navFrame.Position = UDim2.new(0, 10, 0, 36)
+            navLayout.FillDirection = Enum.FillDirection.Horizontal
+            
+            container.Size = UDim2.new(1, -20, 1, -80)
+            container.Position = UDim2.new(0, 10, 0, 72)
+        else
+            -- PC UI Boundaries
+            mainFrame.Size = UDim2.new(0, 560, 0, 340)
+            mainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
+            
+            topBar.Size = UDim2.new(1, 0, 0, 32)
+            topBar.Position = UDim2.new(0, 0, 0, 0)
+            
+            titleLabel.Size = UDim2.new(1, -40, 1, 0)
+            titleLabel.Position = UDim2.new(0, 12, 0, 0)
+            
+            headerDivider.Size = UDim2.new(1, 0, 0, 1)
+            headerDivider.Position = UDim2.new(0, 0, 1, -1)
+            
+            navFrame.Size = UDim2.new(0, 110, 1, -44)
+            navFrame.Position = UDim2.new(0, 10, 0, 38)
+            navLayout.FillDirection = Enum.FillDirection.Vertical
+            
+            container.Size = UDim2.new(1, -142, 1, -44)
+            container.Position = UDim2.new(0, 132, 0, 38)
+        end
+        
+        -- Resize button sizes within navigation grid properly
+        for _, btn in pairs(window.TabButtons) do
+            if navLayout.FillDirection == Enum.FillDirection.Horizontal then
+                btn.Size = UDim2.new(0, 70, 1, 0)
+            else
+                btn.Size = UDim2.new(1, 0, 0, 28)
+            end
+        end
+    end
+    
+    adjustLayoutSizes()
+    camera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustLayoutSizes)
+    window.AdjustLayoutSizes = adjustLayoutSizes
+
+    -- Force Executor and Info setup instantly
+    window:CreateNativeInfo()
     window:CreateNativeExecutor()
     
     return window
@@ -216,16 +267,17 @@ end
 function CozyUI:CreateTab(tabName)
     local tab = {}
     local window = self
+    window.CustomTabsCount = window.CustomTabsCount + 1
     
-    -- Spaced-out Square Tab Button
+    -- Custom Script Square Tab Button
     local tabBtn = Instance.new("TextButton")
-    tabBtn.Size = UDim2.new(1, 0, 0, 28)
     tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     tabBtn.BorderSizePixel = 0
     tabBtn.Text = tabName
     tabBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
     tabBtn.Font = Enum.Font.Code
     tabBtn.TextSize = 11
+    tabBtn.LayoutOrder = window.CustomTabsCount -- Kept at the top
     tabBtn.Parent = self.NavFrame
     
     local btnStroke = Instance.new("UIStroke")
@@ -236,7 +288,7 @@ function CozyUI:CreateTab(tabName)
     
     table.insert(window.TabButtons, tabBtn)
 
-    -- Interactive Content Scroll List
+    -- Viewport Page Container
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, -12, 1, -12)
     page.Position = UDim2.new(0, 6, 0, 6)
@@ -269,7 +321,7 @@ function CozyUI:CreateTab(tabName)
     tabBtn.MouseButton1Click:Connect(selectThisTab)
     if #window.Pages == 1 then selectThisTab() end
     
-    -- Handles script buttons added to this specific tab
+    -- Adds buttons inside this tab layout
     function tab:CreateButton(name, callback)
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(1, -4, 0, 28)
@@ -292,21 +344,24 @@ function CozyUI:CreateTab(tabName)
         end)
     end
     
+    -- Dynamically realigns dimensions of buttons inside NavFrame
+    window.AdjustLayoutSizes()
+    
     return tab
 end
 
--- Integrated Native Executor Layout
+-- Integrated Native Executor Tab (Always Forced to Bottom)
 function CozyUI:CreateNativeExecutor()
     local window = self
     
     local execBtn = Instance.new("TextButton")
-    execBtn.Size = UDim2.new(1, 0, 0, 28)
     execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     execBtn.BorderSizePixel = 0
     execBtn.Text = "Executor"
     execBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
     execBtn.Font = Enum.Font.Code
     execBtn.TextSize = 11
+    execBtn.LayoutOrder = 999 -- Stays at the absolute bottom
     execBtn.Parent = self.NavFrame
     
     local exStroke = Instance.new("UIStroke")
@@ -402,4 +457,78 @@ function CozyUI:CreateNativeExecutor()
     end)
 end
 
+-- Integrated Native Info Viewport Tab (Always Forced Above Executor)
+function CozyUI:CreateNativeInfo()
+    local window = self
+    
+    local infoBtn = Instance.new("TextButton")
+    infoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    infoBtn.BorderSizePixel = 0
+    infoBtn.Text = "Info"
+    infoBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+    infoBtn.Font = Enum.Font.Code
+    infoBtn.TextSize = 11
+    infoBtn.LayoutOrder = 998 -- Forced directly above the Executor
+    infoBtn.Parent = self.NavFrame
+    
+    local infStroke = Instance.new("UIStroke")
+    infStroke.Thickness = 1
+    infStroke.Color = Color3.fromRGB(80, 80, 80)
+    infStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    infStroke.Parent = infoBtn
+    table.insert(window.TabButtons, infoBtn)
+
+    local infoPage = Instance.new("Frame")
+    infoPage.Size = UDim2.new(1, -12, 1, -12)
+    infoPage.Position = UDim2.new(0, 6, 0, 6)
+    infoPage.BackgroundTransparency = 1
+    infoPage.Visible = false
+    infoPage.Parent = self.Container
+    table.insert(window.Pages, infoPage)
+
+    local viewport = Instance.new("ViewportFrame")
+    viewport.Size = UDim2.new(1, 0, 1, 0)
+    viewport.Position = UDim2.new(0, 0, 0, 0)
+    viewport.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    viewport.BorderSizePixel = 0
+    viewport.Parent = infoPage
+    
+    local vStroke = Instance.new("UIStroke")
+    vStroke.Thickness = 1
+    vStroke.Color = Color3.fromRGB(255, 255, 255)
+    vStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    vStroke.Parent = viewport
+    
+    task.spawn(function()
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        char.Archivable = true
+        task.wait(0.5)
+        local clone = char:Clone()
+        clone.Parent = viewport
+        
+        local hrp = clone:WaitForChild("HumanoidRootPart")
+        local cam = Instance.new("Camera")
+        viewport.CurrentCamera = cam
+        cam.Parent = viewport
+        
+        local rotAngle = 0
+        game:GetService("RunService").Heartbeat:Connect(function()
+            rotAngle = rotAngle + 1
+            cam.CFrame = CFrame.new(hrp.Position + Vector3.new(math.sin(math.rad(rotAngle)) * 5, 2, math.cos(math.rad(rotAngle)) * 5), hrp.Position)
+        end)
+    end)
+
+    infoBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(window.Pages) do p.Visible = false end
+        for _, b in pairs(window.TabButtons) do 
+            b.TextColor3 = Color3.fromRGB(130, 130, 130)
+            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
+        end
+        infoPage.Visible = true
+        infoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        infoBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    end)
+end
+
 return CozyUI
+
