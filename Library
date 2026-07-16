@@ -1,6 +1,6 @@
 --[[
     ============================================================
-    COZY UI - FIXED MONOCHROME RESONSIVE DESIGN
+    COZY UI - MONOCHROME WIREFRAME EDITION (NATIVE EXECUTOR)
     ============================================================
 ]]
 
@@ -24,7 +24,7 @@ local function getRandomName()
     return name
 end
 
--- Native touch and drag implementation for mobile support
+-- Smooth, robust touch drag handler optimized for mobile executors
 local function makeMobileDraggable(frame)
     local dragging, dragInput, dragStart, startPos
     
@@ -67,7 +67,7 @@ function CozyUI:CreateWindow(config)
     window.TabButtons = {}
     window.Pages = {}
     
-    -- Screen Setup
+    -- Hidden ScreenGui setup
     local sgui = Instance.new("ScreenGui")
     sgui.Name = getRandomName()
     sgui.ResetOnSpawn = false
@@ -76,7 +76,7 @@ function CozyUI:CreateWindow(config)
     local success, p = pcall(function() return gethui() end)
     sgui.Parent = (success and p) or CoreGui
     
-    -- Main Container Frame (Perfect mobile targeted aspect ratio)
+    -- Main UI Window Frame
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = getRandomName()
     mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -84,17 +84,16 @@ function CozyUI:CreateWindow(config)
     mainFrame.Active = true
     mainFrame.Parent = sgui
     
-    -- Make sure it drags on phone screens perfectly
     makeMobileDraggable(mainFrame)
     
-    -- Razor Thin 1px Outline
+    -- Razor Thin 1px Outline Border
     local mainStroke = Instance.new("UIStroke")
     mainStroke.Thickness = 1
     mainStroke.Color = Color3.fromRGB(255, 255, 255)
     mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     mainStroke.Parent = mainFrame
 
-    -- Title Bar
+    -- Title Banner Text
     local titleLabel = Instance.new("TextLabel")
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = " " .. window.Title
@@ -104,7 +103,7 @@ function CozyUI:CreateWindow(config)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = mainFrame
     
-    -- Navigation Holder
+    -- Navigation Frame Bar
     local navFrame = Instance.new("Frame")
     navFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     navFrame.Parent = mainFrame
@@ -114,12 +113,11 @@ function CozyUI:CreateWindow(config)
     navStroke.Color = Color3.fromRGB(255, 255, 255)
     navStroke.Parent = navFrame
     
-    -- Layout modifiers for standard tab stacking
     local navLayout = Instance.new("UIListLayout")
     navLayout.Padding = UDim.new(0, 5)
     navLayout.Parent = navFrame
     
-    -- Content View Window
+    -- Elements Content Wrapper
     local container = Instance.new("Frame")
     container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     container.Parent = mainFrame
@@ -135,14 +133,14 @@ function CozyUI:CreateWindow(config)
     window.Container = container
     window.TitleLabel = titleLabel
 
-    -- Scale settings that match mobile device dimensions cleanly
+    -- Automatic Viewport Platform Adaptation Strategy
     local camera = Workspace.CurrentCamera
     local function applyResponsiveLayout()
         local viewportSize = camera.ViewportSize
         if viewportSize.X <= 768 then
-            -- Targeted Mobile View Size Setup
-            mainFrame.Size = UDim2.new(0, 380, 0, 240)
-            mainFrame.Position = UDim2.new(0.5, -190, 0.5, -120)
+            -- Touch / Mobile Display Configurations
+            mainFrame.Size = UDim2.new(0, 390, 0, 245)
+            mainFrame.Position = UDim2.new(0.5, -195, 0.5, -122)
             
             titleLabel.Size = UDim2.new(1, 0, 0, 25)
             titleLabel.Position = UDim2.new(0, 5, 0, 0)
@@ -154,7 +152,7 @@ function CozyUI:CreateWindow(config)
             container.Size = UDim2.new(1, -12, 1, -70)
             container.Position = UDim2.new(0, 6, 0, 62)
         else
-            -- Standard PC Setup
+            -- Desktop Widescreen Configurations
             mainFrame.Size = UDim2.new(0, 560, 0, 340)
             mainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
             
@@ -169,7 +167,6 @@ function CozyUI:CreateWindow(config)
             container.Position = UDim2.new(0, 140, 0, 35)
         end
         
-        -- Update the individual layouts of the tab elements
         for _, btn in pairs(window.TabButtons) do
             if navLayout.FillDirection == Enum.FillDirection.Horizontal then
                 btn.Size = UDim2.new(0, 85, 1, 0)
@@ -181,6 +178,10 @@ function CozyUI:CreateWindow(config)
     
     applyResponsiveLayout()
     camera:GetPropertyChangedSignal("ViewportSize"):Connect(applyResponsiveLayout)
+    
+    -- Natively generate the core utility tabs instantly
+    window:CreateNativeExecutor()
+    window:CreateNativeInfo()
     
     return window
 end
@@ -258,11 +259,9 @@ function CozyUI:CreateTab(tabName)
     return tab
 end
 
--- Generates built-in panels matching your custom bottom hierarchy layout rules
-function CozyUI:AddDefaultTabs()
+-- Integrated Core Executor Engine Console
+function CozyUI:CreateNativeExecutor()
     local window = self
-    
-    -- 1. Create Internal Executor Tab Interface
     local execBtn = Instance.new("TextButton")
     execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     execBtn.Text = "Executor"
@@ -290,7 +289,7 @@ function CozyUI:AddDefaultTabs()
     textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     textBox.ClearTextOnFocus = false
     textBox.MultiLine = true
-    textBox.Text = "-- Custom code input module..."
+    textBox.Text = "-- Write or paste code lines here..."
     textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     textBox.Font = Enum.Font.Code
     textBox.TextSize = 11
@@ -304,10 +303,10 @@ function CozyUI:AddDefaultTabs()
     tStroke.Parent = textBox
     
     local runBtn = Instance.new("TextButton")
-    runBtn.Size = UDim2.new(1, 0, 0, 26)
+    runBtn.Size = UDim2.new(0.5, -4, 0, 26)
     runBtn.Position = UDim2.new(0, 0, 1, -26)
     runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    runBtn.Text = "Execute Code Line"
+    runBtn.Text = "Execute"
     runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     runBtn.Font = Enum.Font.Code
     runBtn.TextSize = 12
@@ -318,12 +317,31 @@ function CozyUI:AddDefaultTabs()
     rbStroke.Color = Color3.fromRGB(255, 255, 255)
     rbStroke.Parent = runBtn
     
+    local clearBtn = Instance.new("TextButton")
+    clearBtn.Size = UDim2.new(0.5, -4, 0, 26)
+    clearBtn.Position = UDim2.new(0.5, 4, 1, -26)
+    clearBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    clearBtn.Text = "Clear"
+    clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    clearBtn.Font = Enum.Font.Code
+    clearBtn.TextSize = 12
+    clearBtn.Parent = execPage
+    
+    local cbStroke = Instance.new("UIStroke")
+    cbStroke.Thickness = 1
+    cbStroke.Color = Color3.fromRGB(255, 255, 255)
+    cbStroke.Parent = clearBtn
+    
     runBtn.MouseButton1Click:Connect(function()
         local code = textBox.Text
         if code and code ~= "" then
             local func, err = loadstring(code)
             if func then task.spawn(func) end
         end
+    end)
+    
+    clearBtn.MouseButton1Click:Connect(function()
+        textBox.Text = ""
     end)
 
     execBtn.MouseButton1Click:Connect(function()
@@ -336,8 +354,11 @@ function CozyUI:AddDefaultTabs()
         execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         execBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
     end)
+end
 
-    -- 2. Create Profile Info Tab Interface (Positioned completely at the bottom)
+-- Profile Meta System panel
+function CozyUI:CreateNativeInfo()
+    local window = self
     local infoBtn = Instance.new("TextButton")
     infoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     infoBtn.Text = "Info"
@@ -429,16 +450,6 @@ function CozyUI:AddDefaultTabs()
         infoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         infoBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
     end)
-    
-    -- Recalculate layout constraints safely
-    local currentCamera = Workspace.CurrentCamera
-    if currentCamera.ViewportSize.X <= 768 then
-        execBtn.Size = UDim2.new(0, 85, 1, 0)
-        infoBtn.Size = UDim2.new(0, 85, 1, 0)
-    else
-        execBtn.Size = UDim2.new(1, 0, 0, 26)
-        infoBtn.Size = UDim2.new(1, 0, 0, 26)
-    end
 end
 
 return CozyUI
