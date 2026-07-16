@@ -1,6 +1,6 @@
 --[[
     ============================================================
-    COZY UI - RESPONSIVE ENGINES (MOBILE & PC AUTO-SWITCH)
+    COZY UI - FIXED MONOCHROME RESONSIVE DESIGN
     ============================================================
 ]]
 
@@ -24,10 +24,46 @@ local function getRandomName()
     return name
 end
 
+-- Native touch and drag implementation for mobile support
+local function makeMobileDraggable(frame)
+    local dragging, dragInput, dragStart, startPos
+    
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X, 
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
 function CozyUI:CreateWindow(config)
     local window = setmetatable({}, CozyUI)
     window.Title = config.Name or "Cozy Hub"
-    window.Tabs = {}
     window.TabButtons = {}
     window.Pages = {}
     
@@ -40,15 +76,18 @@ function CozyUI:CreateWindow(config)
     local success, p = pcall(function() return gethui() end)
     sgui.Parent = (success and p) or CoreGui
     
-    -- Main Container Frame
+    -- Main Container Frame (Perfect mobile targeted aspect ratio)
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = getRandomName()
     mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
-    mainFrame.Draggable = true
     mainFrame.Parent = sgui
     
+    -- Make sure it drags on phone screens perfectly
+    makeMobileDraggable(mainFrame)
+    
+    -- Razor Thin 1px Outline
     local mainStroke = Instance.new("UIStroke")
     mainStroke.Thickness = 1
     mainStroke.Color = Color3.fromRGB(255, 255, 255)
@@ -67,26 +106,27 @@ function CozyUI:CreateWindow(config)
     
     -- Navigation Holder
     local navFrame = Instance.new("Frame")
-    navFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+    navFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     navFrame.Parent = mainFrame
     
     local navStroke = Instance.new("UIStroke")
     navStroke.Thickness = 1
-    navStroke.Color = Color3.fromRGB(40, 40, 40)
+    navStroke.Color = Color3.fromRGB(255, 255, 255)
     navStroke.Parent = navFrame
     
+    -- Layout modifiers for standard tab stacking
     local navLayout = Instance.new("UIListLayout")
-    navLayout.Padding = UDim.new(0, 4)
+    navLayout.Padding = UDim.new(0, 5)
     navLayout.Parent = navFrame
     
     -- Content View Window
     local container = Instance.new("Frame")
-    container.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+    container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     container.Parent = mainFrame
     
     local containerStroke = Instance.new("UIStroke")
     containerStroke.Thickness = 1
-    containerStroke.Color = Color3.fromRGB(40, 40, 40)
+    containerStroke.Color = Color3.fromRGB(255, 255, 255)
     containerStroke.Parent = container
 
     window.MainFrame = mainFrame
@@ -95,14 +135,14 @@ function CozyUI:CreateWindow(config)
     window.Container = container
     window.TitleLabel = titleLabel
 
-    -- Responsive Engine Check (PC vs Mobile Viewport Layout scaling)
+    -- Scale settings that match mobile device dimensions cleanly
     local camera = Workspace.CurrentCamera
     local function applyResponsiveLayout()
         local viewportSize = camera.ViewportSize
         if viewportSize.X <= 768 then
-            -- MOBILE UI TRANSFORMATION Layout Setup
-            mainFrame.Size = UDim2.new(0, 360, 0, 260)
-            mainFrame.Position = UDim2.new(0.5, -180, 0.5, -130)
+            -- Targeted Mobile View Size Setup
+            mainFrame.Size = UDim2.new(0, 380, 0, 240)
+            mainFrame.Position = UDim2.new(0.5, -190, 0.5, -120)
             
             titleLabel.Size = UDim2.new(1, 0, 0, 25)
             titleLabel.Position = UDim2.new(0, 5, 0, 0)
@@ -111,39 +151,36 @@ function CozyUI:CreateWindow(config)
             navFrame.Position = UDim2.new(0, 6, 0, 25)
             navLayout.FillDirection = Enum.FillDirection.Horizontal
             
-            container.Size = UDim2.new(1, -12, 1, -68)
+            container.Size = UDim2.new(1, -12, 1, -70)
             container.Position = UDim2.new(0, 6, 0, 62)
-            
-            for _, btn in pairs(window.TabButtons) do
-                btn.Size = UDim2.new(0, 80, 1, 0)
-            end
         else
-            -- PC UI DESIGN WIDESCREEN SETUP
-            mainFrame.Size = UDim2.new(0, 580, 0, 360)
-            mainFrame.Position = UDim2.new(0.5, -290, 0.5, -180)
+            -- Standard PC Setup
+            mainFrame.Size = UDim2.new(0, 560, 0, 340)
+            mainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
             
             titleLabel.Size = UDim2.new(1, 0, 0, 30)
             titleLabel.Position = UDim2.new(0, 10, 0, 0)
             
-            navFrame.Size = UDim2.new(0, 130, 1, -40)
+            navFrame.Size = UDim2.new(0, 120, 1, -40)
             navFrame.Position = UDim2.new(0, 10, 0, 35)
             navLayout.FillDirection = Enum.FillDirection.Vertical
             
-            container.Size = UDim2.new(1, -160, 1, -40)
-            container.Position = UDim2.new(0, 150, 0, 35)
-            
-            for _, btn in pairs(window.TabButtons) do
-                btn.Size = UDim2.new(1, 0, 0, 28)
+            container.Size = UDim2.new(1, -150, 1, -40)
+            container.Position = UDim2.new(0, 140, 0, 35)
+        end
+        
+        -- Update the individual layouts of the tab elements
+        for _, btn in pairs(window.TabButtons) do
+            if navLayout.FillDirection == Enum.FillDirection.Horizontal then
+                btn.Size = UDim2.new(0, 85, 1, 0)
+            else
+                btn.Size = UDim2.new(1, 0, 0, 26)
             end
         end
     end
     
     applyResponsiveLayout()
     camera:GetPropertyChangedSignal("ViewportSize"):Connect(applyResponsiveLayout)
-    
-    -- Setup Built-In Systems
-    window:CreateInfoTab()
-    window:CreateExecutorTab()
     
     return window
 end
@@ -155,25 +192,17 @@ function CozyUI:CreateTab(tabName)
     local tabBtn = Instance.new("TextButton")
     tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     tabBtn.Text = tabName
-    tabBtn.TextColor3 = Color3.fromRGB(160, 160, 160)
+    tabBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
     tabBtn.Font = Enum.Font.Code
     tabBtn.TextSize = 12
     tabBtn.Parent = self.NavFrame
     
     local btnStroke = Instance.new("UIStroke")
     btnStroke.Thickness = 1
-    btnStroke.Color = Color3.fromRGB(30, 30, 30)
+    btnStroke.Color = Color3.fromRGB(100, 100, 100)
     btnStroke.Parent = tabBtn
     
     table.insert(window.TabButtons, tabBtn)
-    
-    -- Force initial size updates
-    local camera = Workspace.CurrentCamera
-    if camera.ViewportSize.X <= 768 then
-        tabBtn.Size = UDim2.new(0, 80, 1, 0)
-    else
-        tabBtn.Size = UDim2.new(1, 0, 0, 28)
-    end
 
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, -10, 1, -10)
@@ -182,7 +211,7 @@ function CozyUI:CreateTab(tabName)
     page.Visible = false
     page.CanvasSize = UDim2.new(0, 0, 0, 0)
     page.AutomaticSize = Enum.AutomaticSize.Y
-    page.ScrollBarThickness = 2
+    page.ScrollBarThickness = 1
     page.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
     page.Parent = self.Container
     
@@ -195,8 +224,8 @@ function CozyUI:CreateTab(tabName)
     local function selectThisTab()
         for _, p in pairs(window.Pages) do p.Visible = false end
         for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(160, 160, 160)
-            b.UIStroke.Color = Color3.fromRGB(30, 30, 30)
+            b.TextColor3 = Color3.fromRGB(150, 150, 150)
+            b.UIStroke.Color = Color3.fromRGB(100, 100, 100)
         end
         page.Visible = true
         tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -208,8 +237,8 @@ function CozyUI:CreateTab(tabName)
     
     function tab:CreateButton(name, callback)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -4, 0, 30)
-        btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+        btn.Size = UDim2.new(1, -4, 0, 28)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         btn.Text = name
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.Font = Enum.Font.Code
@@ -222,11 +251,6 @@ function CozyUI:CreateTab(tabName)
         s.Parent = btn
         
         btn.MouseButton1Click:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            btn.TextColor3 = Color3.fromRGB(0, 0, 0)
-            task.wait(0.05)
-            btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
             pcall(callback)
         end)
     end
@@ -234,21 +258,98 @@ function CozyUI:CreateTab(tabName)
     return tab
 end
 
-function CozyUI:CreateInfoTab()
+-- Generates built-in panels matching your custom bottom hierarchy layout rules
+function CozyUI:AddDefaultTabs()
     local window = self
+    
+    -- 1. Create Internal Executor Tab Interface
+    local execBtn = Instance.new("TextButton")
+    execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    execBtn.Text = "Executor"
+    execBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
+    execBtn.Font = Enum.Font.Code
+    execBtn.TextSize = 12
+    execBtn.Parent = self.NavFrame
+    
+    local exStroke = Instance.new("UIStroke")
+    exStroke.Thickness = 1
+    exStroke.Color = Color3.fromRGB(100, 100, 100)
+    exStroke.Parent = execBtn
+    table.insert(window.TabButtons, execBtn)
+
+    local execPage = Instance.new("Frame")
+    execPage.Size = UDim2.new(1, -10, 1, -10)
+    execPage.Position = UDim2.new(0, 5, 0, 5)
+    execPage.BackgroundTransparency = 1
+    execPage.Visible = false
+    execPage.Parent = self.Container
+    table.insert(window.Pages, execPage)
+    
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(1, 0, 1, -32)
+    textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    textBox.ClearTextOnFocus = false
+    textBox.MultiLine = true
+    textBox.Text = "-- Custom code input module..."
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.Font = Enum.Font.Code
+    textBox.TextSize = 11
+    textBox.TextXAlignment = Enum.TextXAlignment.Left
+    textBox.TextYAlignment = Enum.TextYAlignment.Top
+    textBox.Parent = execPage
+    
+    local tStroke = Instance.new("UIStroke")
+    tStroke.Thickness = 1
+    tStroke.Color = Color3.fromRGB(255, 255, 255)
+    tStroke.Parent = textBox
+    
+    local runBtn = Instance.new("TextButton")
+    runBtn.Size = UDim2.new(1, 0, 0, 26)
+    runBtn.Position = UDim2.new(0, 0, 1, -26)
+    runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    runBtn.Text = "Execute Code Line"
+    runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    runBtn.Font = Enum.Font.Code
+    runBtn.TextSize = 12
+    runBtn.Parent = execPage
+    
+    local rbStroke = Instance.new("UIStroke")
+    rbStroke.Thickness = 1
+    rbStroke.Color = Color3.fromRGB(255, 255, 255)
+    rbStroke.Parent = runBtn
+    
+    runBtn.MouseButton1Click:Connect(function()
+        local code = textBox.Text
+        if code and code ~= "" then
+            local func, err = loadstring(code)
+            if func then task.spawn(func) end
+        end
+    end)
+
+    execBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(window.Pages) do p.Visible = false end
+        for _, b in pairs(window.TabButtons) do 
+            b.TextColor3 = Color3.fromRGB(150, 150, 150)
+            b.UIStroke.Color = Color3.fromRGB(100, 100, 100)
+        end
+        execPage.Visible = true
+        execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        execBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    end)
+
+    -- 2. Create Profile Info Tab Interface (Positioned completely at the bottom)
     local infoBtn = Instance.new("TextButton")
     infoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    infoBtn.Text = "Profile Info"
-    infoBtn.TextColor3 = Color3.fromRGB(160, 160, 160)
+    infoBtn.Text = "Info"
+    infoBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
     infoBtn.Font = Enum.Font.Code
     infoBtn.TextSize = 12
     infoBtn.Parent = self.NavFrame
     
-    local btnStroke = Instance.new("UIStroke")
-    btnStroke.Thickness = 1
-    btnStroke.Color = Color3.fromRGB(30, 30, 30)
-    btnStroke.Parent = infoBtn
-    
+    local infStroke = Instance.new("UIStroke")
+    infStroke.Thickness = 1
+    infStroke.Color = Color3.fromRGB(100, 100, 100)
+    infStroke.Parent = infoBtn
     table.insert(window.TabButtons, infoBtn)
 
     local infoPage = Instance.new("Frame")
@@ -257,10 +358,8 @@ function CozyUI:CreateInfoTab()
     infoPage.BackgroundTransparency = 1
     infoPage.Visible = false
     infoPage.Parent = self.Container
-    
     table.insert(window.Pages, infoPage)
     
-    -- Left Text Info Layout Stack
     local infoList = Instance.new("Frame")
     infoList.Size = UDim2.new(0.5, -5, 1, 0)
     infoList.BackgroundTransparency = 1
@@ -273,7 +372,7 @@ function CozyUI:CreateInfoTab()
     local function createMetaLabel(txt)
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(1, 0, 0, 22)
-        lbl.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+        lbl.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         lbl.Text = " " .. txt
         lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
         lbl.Font = Enum.Font.Code
@@ -282,20 +381,18 @@ function CozyUI:CreateInfoTab()
         lbl.Parent = infoList
         local s = Instance.new("UIStroke")
         s.Thickness = 1
-        s.Color = Color3.fromRGB(40, 40, 40)
+        s.Color = Color3.fromRGB(255, 255, 255)
         s.Parent = lbl
     end
     
     createMetaLabel("User: " .. LocalPlayer.Name)
     createMetaLabel("Display: " .. LocalPlayer.DisplayName)
-    createMetaLabel("Account Age: " .. tostring(LocalPlayer.AccountAge) .. " days")
-    createMetaLabel("ID: " .. tostring(LocalPlayer.UserId))
+    createMetaLabel("Age: " .. tostring(LocalPlayer.AccountAge) .. " days")
 
-    -- Upgraded 3D Viewport
     local viewport = Instance.new("ViewportFrame")
     viewport.Size = UDim2.new(0.5, -5, 1, 0)
     viewport.Position = UDim2.new(0.5, 5, 0, 0)
-    viewport.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    viewport.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     viewport.Parent = infoPage
     
     local vStroke = Instance.new("UIStroke")
@@ -325,118 +422,23 @@ function CozyUI:CreateInfoTab()
     infoBtn.MouseButton1Click:Connect(function()
         for _, p in pairs(window.Pages) do p.Visible = false end
         for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(160, 160, 160)
-            b.UIStroke.Color = Color3.fromRGB(30, 30, 30)
+            b.TextColor3 = Color3.fromRGB(150, 150, 150)
+            b.UIStroke.Color = Color3.fromRGB(100, 100, 100)
         end
         infoPage.Visible = true
         infoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         infoBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
     end)
-end
-
-function CozyUI:CreateExecutorTab()
-    local window = self
-    local execBtn = Instance.new("TextButton")
-    execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    execBtn.Text = "Internal Exec"
-    execBtn.TextColor3 = Color3.fromRGB(160, 160, 160)
-    execBtn.Font = Enum.Font.Code
-    execBtn.TextSize = 12
-    execBtn.Parent = self.NavFrame
     
-    local btnStroke = Instance.new("UIStroke")
-    btnStroke.Thickness = 1
-    btnStroke.Color = Color3.fromRGB(30, 30, 30)
-    btnStroke.Parent = execBtn
-    
-    table.insert(window.TabButtons, execBtn)
-
-    local execPage = Instance.new("Frame")
-    execPage.Size = UDim2.new(1, -10, 1, -10)
-    execPage.Position = UDim2.new(0, 5, 0, 5)
-    execPage.BackgroundTransparency = 1
-    execPage.Visible = false
-    execPage.Parent = self.Container
-    
-    table.insert(window.Pages, execPage)
-    
-    -- TextBox Console Terminal Input
-    local textBox = Instance.new("TextBox")
-    textBox.Size = UDim2.new(1, 0, 1, -35)
-    textBox.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-    textBox.ClearTextOnFocus = false
-    textBox.MultiLine = true
-    textBox.Text = "-- Enter custom Luau script lines here..."
-    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.Font = Enum.Font.Code
-    textBox.TextSize = 11
-    textBox.TextXAlignment = Enum.TextXAlignment.Left
-    textBox.TextYAlignment = Enum.TextYAlignment.Top
-    textBox.Parent = execPage
-    
-    local tStroke = Instance.new("UIStroke")
-    tStroke.Thickness = 1
-    tStroke.Color = Color3.fromRGB(40, 40, 40)
-    tStroke.Parent = textBox
-    
-    -- Run Action Button
-    local runBtn = Instance.new("TextButton")
-    runBtn.Size = UDim2.new(0.5, -4, 0, 28)
-    runBtn.Position = UDim2.new(0, 0, 1, -28)
-    runBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    runBtn.Text = "Execute Script"
-    runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    runBtn.Font = Enum.Font.Code
-    runBtn.TextSize = 12
-    runBtn.Parent = execPage
-    
-    local rbStroke = Instance.new("UIStroke")
-    rbStroke.Thickness = 1
-    rbStroke.Color = Color3.fromRGB(255, 255, 255)
-    rbStroke.Parent = runBtn
-    
-    -- Clear Action Button
-    local clearBtn = Instance.new("TextButton")
-    clearBtn.Size = UDim2.new(0.5, -4, 0, 28)
-    clearBtn.Position = UDim2.new(0.5, 4, 1, -28)
-    clearBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    clearBtn.Text = "Clear Console"
-    clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    clearBtn.Font = Enum.Font.Code
-    clearBtn.TextSize = 12
-    clearBtn.Parent = execPage
-    
-    local cbStroke = Instance.new("UIStroke")
-    cbStroke.Thickness = 1
-    cbStroke.Color = Color3.fromRGB(255, 255, 255)
-    cbStroke.Parent = clearBtn
-    
-    runBtn.MouseButton1Click:Connect(function()
-        local code = textBox.Text
-        if code and code ~= "" then
-            local func, err = loadstring(code)
-            if func then
-                task.spawn(func)
-            else
-                warn("Cozy Exec Error: " .. tostring(err))
-            end
-        end
-    end)
-    
-    clearBtn.MouseButton1Click:Connect(function()
-        textBox.Text = ""
-    end)
-
-    execBtn.MouseButton1Click:Connect(function()
-        for _, p in pairs(window.Pages) do p.Visible = false end
-        for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(160, 160, 160)
-            b.UIStroke.Color = Color3.fromRGB(30, 30, 30)
-        end
-        execPage.Visible = true
-        execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        execBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    end)
+    -- Recalculate layout constraints safely
+    local currentCamera = Workspace.CurrentCamera
+    if currentCamera.ViewportSize.X <= 768 then
+        execBtn.Size = UDim2.new(0, 85, 1, 0)
+        infoBtn.Size = UDim2.new(0, 85, 1, 0)
+    else
+        execBtn.Size = UDim2.new(1, 0, 0, 26)
+        infoBtn.Size = UDim2.new(1, 0, 0, 26)
+    end
 end
 
 return CozyUI
