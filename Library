@@ -1,6 +1,6 @@
 --[[
     ============================================================
-    COZY UI - MONOCHROME WIREFRAME EDITION (V3 PERFECT CONTAINMENT)
+    COZY UI - MONOCHROME WIREFRAME EDITION (V4 FIXED MOBILE)
     ============================================================
 ]]
 
@@ -23,8 +23,8 @@ local function getRandomName()
     return name
 end
 
--- Smooth, robust touch drag handler optimized for mobile executors
-local function makeMobileDraggable(frame, handle)
+-- Clean touch/mouse dragging handler
+local function makeDraggable(frame, handle)
     local dragging, dragInput, dragStart, startPos
     
     handle.InputBegan:Connect(function(input)
@@ -74,36 +74,44 @@ function CozyUI:CreateWindow(config)
     
     local success, p = pcall(function() return gethui() end)
     sgui.Parent = (success and p) or CoreGui
+    window.ScreenGui = sgui
     
-    -- Main Core Window Frame
+    -- Main Window Frame
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = getRandomName()
+    mainFrame.Size = UDim2.new(0, 420, 0, 250)
+    mainFrame.Position = UDim2.new(0.5, -210, 0.5, -125)
     mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
     mainFrame.Parent = sgui
+    window.MainFrame = mainFrame
     
-    -- Razor Thin External Outline
+    -- Outer Border Outline
     local mainStroke = Instance.new("UIStroke")
     mainStroke.Thickness = 1
     mainStroke.Color = Color3.fromRGB(255, 255, 255)
     mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     mainStroke.Parent = mainFrame
 
-    -- Inner Header Top Bar (Contained perfectly inside)
+    -- Drag Header Bar
     local topBar = Instance.new("Frame")
+    topBar.Size = UDim2.new(1, 0, 0, 30)
+    topBar.Position = UDim2.new(0, 0, 0, 0)
     topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     topBar.BorderSizePixel = 0
     topBar.Parent = mainFrame
     
-    -- Divider line below header
     local headerDivider = Instance.new("Frame")
+    headerDivider.Size = UDim2.new(1, 0, 0, 1)
+    headerDivider.Position = UDim2.new(0, 0, 1, 0)
     headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     headerDivider.BorderSizePixel = 0
-    headerDivider.Parent = mainFrame
+    headerDivider.Parent = topBar
 
-    -- Title Banner Text
     local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -40, 1, 0)
+    titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = window.Title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -112,19 +120,24 @@ function CozyUI:CreateWindow(config)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
     
-    makeMobileDraggable(mainFrame, topBar)
+    makeDraggable(mainFrame, topBar)
     
-    -- Navigation Frame Container (100% inside, clean padding, NO overlapping borders)
+    -- Navigation Frame Container (Fixed Left Side)
     local navFrame = Instance.new("Frame")
+    navFrame.Size = UDim2.new(0, 110, 1, -40)
+    navFrame.Position = UDim2.new(0, 10, 0, 38)
     navFrame.BackgroundTransparency = 1
     navFrame.Parent = mainFrame
     
     local navLayout = Instance.new("UIListLayout")
-    navLayout.Padding = UDim.new(0, 6) -- Clean, distinct spacing between tabs
+    navLayout.Padding = UDim.new(0, 6) -- Visible spacing between navigation tabs
+    navLayout.FillDirection = Enum.FillDirection.Vertical
     navLayout.Parent = navFrame
     
-    -- Elements Content Wrapper (Nested beautifully inside)
+    -- Main Element Container Frame
     local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -140, 1, -40)
+    container.Position = UDim2.new(0, 130, 0, 38)
     container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     container.BorderSizePixel = 0
     container.Parent = mainFrame
@@ -135,74 +148,67 @@ function CozyUI:CreateWindow(config)
     containerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     containerStroke.Parent = container
 
-    window.MainFrame = mainFrame
     window.NavFrame = navFrame
-    window.NavLayout = navLayout
     window.Container = container
-    window.TitleLabel = titleLabel
+    
+    -- Minimize/Maximize Button Setup
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 20, 0, 20)
+    closeBtn.Position = UDim2.new(1, -25, 0, 5)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    closeBtn.BorderSizePixel = 0
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.Font = Enum.Font.Code
+    closeBtn.TextSize = 12
+    closeBtn.Parent = topBar
+    
+    local closeStroke = Instance.new("UIStroke")
+    closeStroke.Thickness = 1
+    closeStroke.Color = Color3.fromRGB(255, 255, 255)
+    closeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    closeStroke.Parent = closeBtn
+    
+    -- Minimized Little Square Button
+    local miniFrame = Instance.new("Frame")
+    miniFrame.Size = UDim2.new(0, 60, 0, 30)
+    miniFrame.Position = UDim2.new(0.5, -30, 0.1, 0)
+    miniFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    miniFrame.BorderSizePixel = 0
+    miniFrame.Visible = false
+    miniFrame.Active = true
+    miniFrame.Parent = sgui
+    
+    local miniStroke = Instance.new("UIStroke")
+    miniStroke.Thickness = 1
+    miniStroke.Color = Color3.fromRGB(255, 255, 255)
+    miniStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    miniStroke.Parent = miniFrame
+    
+    local miniBtn = Instance.new("TextButton")
+    miniBtn.Size = UDim2.new(1, 0, 1, 0)
+    miniBtn.BackgroundTransparency = 1
+    miniBtn.Text = "Cozy"
+    miniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    miniBtn.Font = Enum.Font.Code
+    miniBtn.TextSize = 12
+    miniBtn.Parent = miniFrame
+    
+    makeDraggable(miniFrame, miniFrame)
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        mainFrame.Visible = false
+        miniFrame.Position = UDim2.new(0, mainFrame.AbsolutePosition.X + 10, 0, mainFrame.AbsolutePosition.Y + 10)
+        miniFrame.Visible = true
+    end)
+    
+    miniBtn.MouseButton1Click:Connect(function()
+        miniFrame.Visible = false
+        mainFrame.Visible = true
+    end)
 
-    -- Automatic Viewport Platform Adaptation Strategy
-    local camera = Workspace.CurrentCamera
-    local function applyResponsiveLayout()
-        local viewportSize = camera.ViewportSize
-        if viewportSize.X <= 768 then
-            -- Touch / Mobile Layout Configurations
-            mainFrame.Size = UDim2.new(0, 390, 0, 265)
-            mainFrame.Position = UDim2.new(0.5, -195, 0.5, -132)
-            
-            topBar.Size = UDim2.new(1, 0, 0, 30)
-            topBar.Position = UDim2.new(0, 0, 0, 0)
-            
-            titleLabel.Size = UDim2.new(1, 0, 1, 0)
-            titleLabel.Position = UDim2.new(0, 10, 0, 0)
-            
-            headerDivider.Size = UDim2.new(1, 0, 0, 1)
-            headerDivider.Position = UDim2.new(0, 0, 0, 30)
-            
-            navFrame.Size = UDim2.new(1, -20, 0, 32)
-            navFrame.Position = UDim2.new(0, 10, 0, 37)
-            navLayout.FillDirection = Enum.FillDirection.Horizontal
-            
-            container.Size = UDim2.new(1, -20, 1, -85)
-            container.Position = UDim2.new(0, 10, 0, 75)
-        else
-            -- Desktop Widescreen Configurations
-            mainFrame.Size = UDim2.new(0, 560, 0, 350)
-            mainFrame.Position = UDim2.new(0.5, -280, 0.5, -175)
-            
-            topBar.Size = UDim2.new(1, 0, 0, 32)
-            topBar.Position = UDim2.new(0, 0, 0, 0)
-            
-            titleLabel.Size = UDim2.new(1, 0, 1, 0)
-            titleLabel.Position = UDim2.new(0, 12, 0, 0)
-            
-            headerDivider.Size = UDim2.new(1, 0, 0, 1)
-            headerDivider.Position = UDim2.new(0, 0, 0, 32)
-            
-            navFrame.Size = UDim2.new(0, 110, 1, -44)
-            navFrame.Position = UDim2.new(0, 10, 0, 38)
-            navLayout.FillDirection = Enum.FillDirection.Vertical
-            
-            container.Size = UDim2.new(1, -142, 1, -44)
-            container.Position = UDim2.new(0, 132, 0, 38)
-        end
-        
-        -- Style individual square button elements inside navigation layout
-        for _, btn in pairs(window.TabButtons) do
-            if navLayout.FillDirection == Enum.FillDirection.Horizontal then
-                btn.Size = UDim2.new(0, 80, 1, 0)
-            else
-                btn.Size = UDim2.new(1, 0, 0, 30)
-            end
-        end
-    end
-    
-    applyResponsiveLayout()
-    camera:GetPropertyChangedSignal("ViewportSize"):Connect(applyResponsiveLayout)
-    
-    -- Instantly inject core systems side-by-side inside the border
+    -- Build the permanent Native Executor Tab first
     window:CreateNativeExecutor()
-    window:CreateNativeInfo()
     
     return window
 end
@@ -211,17 +217,17 @@ function CozyUI:CreateTab(tabName)
     local tab = {}
     local window = self
     
-    -- Sharp Square Tab Button Frame
+    -- Spaced-out Square Tab Button
     local tabBtn = Instance.new("TextButton")
+    tabBtn.Size = UDim2.new(1, 0, 0, 28)
     tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabBtn.BorderSizePixel = 0
     tabBtn.Text = tabName
     tabBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
     tabBtn.Font = Enum.Font.Code
     tabBtn.TextSize = 11
-    tabBtn.BorderSizePixel = 0
     tabBtn.Parent = self.NavFrame
     
-    -- Distinct Square Button Border Outline
     local btnStroke = Instance.new("UIStroke")
     btnStroke.Thickness = 1
     btnStroke.Color = Color3.fromRGB(80, 80, 80)
@@ -230,7 +236,7 @@ function CozyUI:CreateTab(tabName)
     
     table.insert(window.TabButtons, tabBtn)
 
-    -- Scrolling Frame Page Container
+    -- Interactive Content Scroll List
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, -12, 1, -12)
     page.Position = UDim2.new(0, 6, 0, 6)
@@ -263,16 +269,16 @@ function CozyUI:CreateTab(tabName)
     tabBtn.MouseButton1Click:Connect(selectThisTab)
     if #window.Pages == 1 then selectThisTab() end
     
-    -- Generates clean, click-ready buttons inside the category space
+    -- Handles script buttons added to this specific tab
     function tab:CreateButton(name, callback)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -4, 0, 30)
+        btn.Size = UDim2.new(1, -4, 0, 28)
         btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        btn.BorderSizePixel = 0
         btn.Text = name
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.Font = Enum.Font.Code
-        btn.TextSize = 12
-        btn.BorderSizePixel = 0
+        btn.TextSize = 11
         btn.Parent = page
         
         local s = Instance.new("UIStroke")
@@ -289,16 +295,18 @@ function CozyUI:CreateTab(tabName)
     return tab
 end
 
--- Contained Native Executor
+-- Integrated Native Executor Layout
 function CozyUI:CreateNativeExecutor()
     local window = self
+    
     local execBtn = Instance.new("TextButton")
+    execBtn.Size = UDim2.new(1, 0, 0, 28)
     execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    execBtn.BorderSizePixel = 0
     execBtn.Text = "Executor"
     execBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
     execBtn.Font = Enum.Font.Code
     execBtn.TextSize = 11
-    execBtn.BorderSizePixel = 0
     execBtn.Parent = self.NavFrame
     
     local exStroke = Instance.new("UIStroke")
@@ -317,15 +325,15 @@ function CozyUI:CreateNativeExecutor()
     table.insert(window.Pages, execPage)
     
     local textBox = Instance.new("TextBox")
-    textBox.Size = UDim2.new(1, 0, 1, -36)
+    textBox.Size = UDim2.new(1, 0, 1, -34)
     textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     textBox.BorderSizePixel = 0
     textBox.ClearTextOnFocus = false
     textBox.MultiLine = true
-    textBox.Text = "-- Write or paste code lines here..."
+    textBox.Text = "-- Code execution lines..."
     textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     textBox.Font = Enum.Font.Code
-    textBox.TextSize = 11
+    textBox.TextSize = 10
     textBox.TextXAlignment = Enum.TextXAlignment.Left
     textBox.TextYAlignment = Enum.TextYAlignment.Top
     textBox.Parent = execPage
@@ -337,14 +345,14 @@ function CozyUI:CreateNativeExecutor()
     tStroke.Parent = textBox
     
     local runBtn = Instance.new("TextButton")
-    runBtn.Size = UDim2.new(0.5, -4, 0, 30)
-    runBtn.Position = UDim2.new(0, 0, 1, -30)
+    runBtn.Size = UDim2.new(0.5, -3, 0, 28)
+    runBtn.Position = UDim2.new(0, 0, 1, -28)
     runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     runBtn.BorderSizePixel = 0
     runBtn.Text = "Execute"
     runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     runBtn.Font = Enum.Font.Code
-    runBtn.TextSize = 12
+    runBtn.TextSize = 11
     runBtn.Parent = execPage
     
     local rbStroke = Instance.new("UIStroke")
@@ -354,14 +362,14 @@ function CozyUI:CreateNativeExecutor()
     rbStroke.Parent = runBtn
     
     local clearBtn = Instance.new("TextButton")
-    clearBtn.Size = UDim2.new(0.5, -4, 0, 30)
-    clearBtn.Position = UDim2.new(0.5, 4, 1, -30)
+    clearBtn.Size = UDim2.new(0.5, -3, 0, 28)
+    clearBtn.Position = UDim2.new(0.5, 3, 1, -28)
     clearBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     clearBtn.BorderSizePixel = 0
     clearBtn.Text = "Clear"
     clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     clearBtn.Font = Enum.Font.Code
-    clearBtn.TextSize = 12
+    clearBtn.TextSize = 11
     clearBtn.Parent = execPage
     
     local cbStroke = Instance.new("UIStroke")
@@ -391,108 +399,6 @@ function CozyUI:CreateNativeExecutor()
         execPage.Visible = true
         execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         execBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    end)
-end
-
--- Contained Native Profile Panel
-function CozyUI:CreateNativeInfo()
-    local window = self
-    local infoBtn = Instance.new("TextButton")
-    infoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    infoBtn.Text = "Info"
-    infoBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
-    infoBtn.Font = Enum.Font.Code
-    infoBtn.TextSize = 11
-    infoBtn.BorderSizePixel = 0
-    infoBtn.Parent = self.NavFrame
-    
-    local infStroke = Instance.new("UIStroke")
-    infStroke.Thickness = 1
-    infStroke.Color = Color3.fromRGB(80, 80, 80)
-    infStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    infStroke.Parent = infoBtn
-    table.insert(window.TabButtons, infoBtn)
-
-    local infoPage = Instance.new("Frame")
-    infoPage.Size = UDim2.new(1, -12, 1, -12)
-    infoPage.Position = UDim2.new(0, 6, 0, 6)
-    infoPage.BackgroundTransparency = 1
-    infoPage.Visible = false
-    infoPage.Parent = self.Container
-    table.insert(window.Pages, infoPage)
-    
-    local infoList = Instance.new("Frame")
-    infoList.Size = UDim2.new(0.5, -5, 1, 0)
-    infoList.BackgroundTransparency = 1
-    infoList.Parent = infoPage
-    
-    local ilist = Instance.new("UIListLayout")
-    ilist.Padding = UDim.new(0, 6)
-    ilist.Parent = infoList
-    
-    local function createMetaLabel(txt)
-        local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(1, 0, 0, 26)
-        lbl.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        lbl.BorderSizePixel = 0
-        lbl.Text = " " .. txt
-        lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-        lbl.Font = Enum.Font.Code
-        lbl.TextSize = 11
-        lbl.TextXAlignment = Enum.TextXAlignment.Left
-        lbl.Parent = infoList
-        local s = Instance.new("UIStroke")
-        s.Thickness = 1
-        s.Color = Color3.fromRGB(255, 255, 255)
-        s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        s.Parent = lbl
-    end
-    
-    createMetaLabel("User: " .. LocalPlayer.Name)
-    createMetaLabel("Display: " .. LocalPlayer.DisplayName)
-    createMetaLabel("Age: " .. tostring(LocalPlayer.AccountAge) .. " days")
-
-    local viewport = Instance.new("ViewportFrame")
-    viewport.Size = UDim2.new(0.5, -5, 1, 0)
-    viewport.Position = UDim2.new(0.5, 5, 0, 0)
-    viewport.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    viewport.BorderSizePixel = 0
-    viewport.Parent = infoPage
-    
-    local vStroke = Instance.new("UIStroke")
-    vStroke.Thickness = 1
-    vStroke.Color = Color3.fromRGB(255, 255, 255)
-    vStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    vStroke.Parent = viewport
-    
-    task.spawn(function()
-        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        char.Archivable = true
-        task.wait(0.5)
-        local clone = char:Clone()
-        clone.Parent = viewport
-        
-        local hrp = clone:WaitForChild("HumanoidRootPart")
-        local cam = Instance.new("Camera")
-        viewport.CurrentCamera = cam
-        cam.Parent = viewport
-        
-        local rotAngle = 0
-        game:GetService("RunService").Heartbeat:Connect(function()
-            rotAngle = rotAngle + 1
-            cam.CFrame = CFrame.new(hrp.Position + Vector3.new(math.sin(math.rad(rotAngle)) * 5, 2, math.cos(math.rad(rotAngle)) * 5), hrp.Position)
-        end)
-    end)
-
-    infoBtn.MouseButton1Click:Connect(function()
-        for _, p in pairs(window.Pages) do p.Visible = false end
-        for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(130, 130, 130)
-            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
-        end
-        infoPage.Visible = true
-        infoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        infoBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
     end)
 end
 
