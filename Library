@@ -1,534 +1,505 @@
---[[
-    ============================================================
-    COZY UI - MONOCHROME WIREFRAME EDITION (V5 AUTO-RESPONSIVE)
-    ============================================================
-]]
-
 local CozyUI = {}
-CozyUI.__index = CozyUI
-
-local CoreGui = game:GetService("CoreGui")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
-
+CozyUI["\95\95\105\110\100\101\120"] = CozyUI
+local CoreGui = game["\71\101\116\83\101\114\118\105\99\101"](game,"\67\111\114\101\71\117\105")
+local Players = game["\71\101\116\83\101\114\118\105\99\101"](game,"\80\108\97\121\101\114\115")
+local LocalPlayer = Players["\76\111\99\97\108\80\108\97\121\101\114"]
+local UserInputService = game["\71\101\116\83\101\114\118\105\99\101"](game,"\85\115\101\114\73\110\112\117\116\83\101\114\118\105\99\101")
+local Workspace = game["\71\101\116\83\101\114\118\105\99\101"](game,"\87\111\114\107\115\112\97\99\101")
 local function getRandomName()
-    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    local name = ""
-    for i = 1, 14 do
-        local rand = math.random(1, #chars)
-        name = name .. string.sub(chars, rand, rand)
-    end
-    return name
+ local chars = "\65\66\67\68\69\70\71\72\73\74\75\76\77\78\79\80\81\82\83\84\85\86\87\88\89\90\97\98\99\100\101\102\103\104\105\106\107\108\109\110\111\112\113\114\115\116\117\118\119\120\121\122\48\49\50\51\52\53\54\55\56\57"
+ local name = ""
+ for i = 1, 14 do
+ local rand = math["\114\97\110\100\111\109"](1, #chars)
+ name = name .. string["\115\117\98"](chars, rand, rand)
+ end
+ return name
 end
-
--- Clean touch/mouse dragging handler
 local function makeDraggable(frame, handle)
-    local dragging, dragInput, dragStart, startPos
-    
-    handle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = frame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-    
-    handle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            frame.Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X, 
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
+ local dragging, dragInput, dragStart, startPos
+ 
+ handle["\73\110\112\117\116\66\101\103\97\110"]["\67\111\110\110\101\99\116"](function(input)
+ if input["\85\115\101\114\73\110\112\117\116\84\121\112\101"] == Enum["\85\115\101\114\73\110\112\117\116\84\121\112\101"]["\77\111\117\115\101\66\117\116\116\111\110\49"] or input["\85\115\101\114\73\110\112\117\116\84\121\112\101"] == Enum["\85\115\101\114\73\110\112\117\116\84\121\112\101"]["\84\111\117\99\104"] then
+ dragging = true
+ dragStart = input["\80\111\115\105\116\105\111\110"]
+ startPos = frame["\80\111\115\105\116\105\111\110"]
+ 
+ input["\67\104\97\110\103\101\100"]["\67\111\110\110\101\99\116"](function()
+ if input["\85\115\101\114\73\110\112\117\116\83\116\97\116\101"] == Enum["\85\115\101\114\73\110\112\117\116\83\116\97\116\101"]["\69\110\100"] then
+ dragging = false
+ end
+ end)
+ end
+ end)
+ 
+ handle["\73\110\112\117\116\67\104\97\110\103\101\100"]["\67\111\110\110\101\99\116"](function(input)
+ if input["\85\115\101\114\73\110\112\117\116\84\121\112\101"] == Enum["\85\115\101\114\73\110\112\117\116\84\121\112\101"]["\77\111\117\115\101\77\111\118\101\109\101\110\116"] or input["\85\115\101\114\73\110\112\117\116\84\121\112\101"] == Enum["\85\115\101\114\73\110\112\117\116\84\121\112\101"]["\84\111\117\99\104"] then
+ dragInput = input
+ end
+ end)
+ 
+ UserInputService["\73\110\112\117\116\67\104\97\110\103\101\100"]["\67\111\110\110\101\99\116"](function(input)
+ if input == dragInput and dragging then
+ local delta = input["\80\111\115\105\116\105\111\110"] - dragStart
+ frame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](
+ startPos["\88"]["\83\99\97\108\101"], 
+ startPos["\88"]["\79\102\102\115\101\116"] + delta["\88"], 
+ startPos["\89"]["\83\99\97\108\101"], 
+ startPos["\89"]["\79\102\102\115\101\116"] + delta["\89"]
+ )
+ end
+ end)
 end
-
-function CozyUI:CreateWindow(config)
-    local window = setmetatable({}, CozyUI)
-    window.Title = config.Name or "Cozy Hub"
-    window.TabButtons = {}
-    window.Pages = {}
-    window.CustomTabsCount = 0
-    
-    -- ScreenGui Setup
-    local sgui = Instance.new("ScreenGui")
-    sgui.Name = getRandomName()
-    sgui.ResetOnSpawn = false
-    sgui.DisplayOrder = 999
-    
-    local success, p = pcall(function() return gethui() end)
-    sgui.Parent = (success and p) or CoreGui
-    window.ScreenGui = sgui
-    
-    -- Main Window Frame
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = getRandomName()
-    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.Active = true
-    mainFrame.Parent = sgui
-    window.MainFrame = mainFrame
-    
-    -- Outer Border Outline
-    local mainStroke = Instance.new("UIStroke")
-    mainStroke.Thickness = 1
-    mainStroke.Color = Color3.fromRGB(255, 255, 255)
-    mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    mainStroke.Parent = mainFrame
-
-    -- Drag Header Bar
-    local topBar = Instance.new("Frame")
-    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    topBar.BorderSizePixel = 0
-    topBar.Parent = mainFrame
-    
-    local headerDivider = Instance.new("Frame")
-    headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    headerDivider.BorderSizePixel = 0
-    headerDivider.Parent = topBar
-
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = window.Title
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.Font = Enum.Font.Code
-    titleLabel.TextSize = 13
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = topBar
-    
-    makeDraggable(mainFrame, topBar)
-    
-    -- Navigation Frame Container
-    local navFrame = Instance.new("Frame")
-    navFrame.BackgroundTransparency = 1
-    navFrame.Parent = mainFrame
-    
-    local navLayout = Instance.new("UIListLayout")
-    navLayout.Padding = UDim.new(0, 6)
-    navLayout.FillDirection = Enum.FillDirection.Vertical
-    navLayout.Parent = navFrame
-    
-    -- Main Element Container Frame
-    local container = Instance.new("Frame")
-    container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    container.BorderSizePixel = 0
-    container.Parent = mainFrame
-    
-    local containerStroke = Instance.new("UIStroke")
-    containerStroke.Thickness = 1
-    containerStroke.Color = Color3.fromRGB(255, 255, 255)
-    containerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    containerStroke.Parent = container
-
-    window.NavFrame = navFrame
-    window.NavLayout = navLayout
-    window.Container = container
-    
-    -- Minimize / Maximize Core Button
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 20, 0, 20)
-    closeBtn.Position = UDim2.new(1, -25, 0, 5)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    closeBtn.BorderSizePixel = 0
-    closeBtn.Text = "X"
-    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeBtn.Font = Enum.Font.Code
-    closeBtn.TextSize = 12
-    closeBtn.Parent = topBar
-    
-    local closeStroke = Instance.new("UIStroke")
-    closeStroke.Thickness = 1
-    closeStroke.Color = Color3.fromRGB(255, 255, 255)
-    closeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    closeStroke.Parent = closeBtn
-    
-    -- Minimized Little Square Button
-    local miniFrame = Instance.new("Frame")
-    miniFrame.Size = UDim2.new(0, 60, 0, 30)
-    miniFrame.Position = UDim2.new(0.5, -30, 0.1, 0)
-    miniFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    miniFrame.BorderSizePixel = 0
-    miniFrame.Visible = false
-    miniFrame.Active = true
-    miniFrame.Parent = sgui
-    
-    local miniStroke = Instance.new("UIStroke")
-    miniStroke.Thickness = 1
-    miniStroke.Color = Color3.fromRGB(255, 255, 255)
-    miniStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    miniStroke.Parent = miniFrame
-    
-    local miniBtn = Instance.new("TextButton")
-    miniBtn.Size = UDim2.new(1, 0, 1, 0)
-    miniBtn.BackgroundTransparency = 1
-    miniBtn.Text = "Cozy"
-    miniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    miniBtn.Font = Enum.Font.Code
-    miniBtn.TextSize = 12
-    miniBtn.Parent = miniFrame
-    
-    makeDraggable(miniFrame, miniFrame)
-    
-    closeBtn.MouseButton1Click:Connect(function()
-        mainFrame.Visible = false
-        miniFrame.Position = UDim2.new(0, mainFrame.AbsolutePosition.X + 10, 0, mainFrame.AbsolutePosition.Y + 10)
-        miniFrame.Visible = true
-    end)
-    
-    miniBtn.MouseButton1Click:Connect(function()
-        miniFrame.Visible = false
-        mainFrame.Visible = true
-    end)
-
-    -- Dynamic PC vs. Mobile Screen Sizer Layout
-    local camera = Workspace.CurrentCamera
-    local function adjustLayoutSizes()
-        local viewportSize = camera.ViewportSize
-        if viewportSize.X <= 768 then
-            -- Mobile UI Boundaries
-            mainFrame.Size = UDim2.new(0, 390, 0, 245)
-            mainFrame.Position = UDim2.new(0.5, -195, 0.5, -122)
-            
-            topBar.Size = UDim2.new(1, 0, 0, 30)
-            topBar.Position = UDim2.new(0, 0, 0, 0)
-            
-            titleLabel.Size = UDim2.new(1, -40, 1, 0)
-            titleLabel.Position = UDim2.new(0, 10, 0, 0)
-            
-            headerDivider.Size = UDim2.new(1, 0, 0, 1)
-            headerDivider.Position = UDim2.new(0, 0, 1, -1)
-            
-            navFrame.Size = UDim2.new(1, -20, 0, 30)
-            navFrame.Position = UDim2.new(0, 10, 0, 36)
-            navLayout.FillDirection = Enum.FillDirection.Horizontal
-            
-            container.Size = UDim2.new(1, -20, 1, -80)
-            container.Position = UDim2.new(0, 10, 0, 72)
-        else
-            -- PC UI Boundaries
-            mainFrame.Size = UDim2.new(0, 560, 0, 340)
-            mainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
-            
-            topBar.Size = UDim2.new(1, 0, 0, 32)
-            topBar.Position = UDim2.new(0, 0, 0, 0)
-            
-            titleLabel.Size = UDim2.new(1, -40, 1, 0)
-            titleLabel.Position = UDim2.new(0, 12, 0, 0)
-            
-            headerDivider.Size = UDim2.new(1, 0, 0, 1)
-            headerDivider.Position = UDim2.new(0, 0, 1, -1)
-            
-            navFrame.Size = UDim2.new(0, 110, 1, -44)
-            navFrame.Position = UDim2.new(0, 10, 0, 38)
-            navLayout.FillDirection = Enum.FillDirection.Vertical
-            
-            container.Size = UDim2.new(1, -142, 1, -44)
-            container.Position = UDim2.new(0, 132, 0, 38)
-        end
-        
-        -- Resize button sizes within navigation grid properly
-        for _, btn in pairs(window.TabButtons) do
-            if navLayout.FillDirection == Enum.FillDirection.Horizontal then
-                btn.Size = UDim2.new(0, 70, 1, 0)
-            else
-                btn.Size = UDim2.new(1, 0, 0, 28)
-            end
-        end
-    end
-    
-    adjustLayoutSizes()
-    camera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustLayoutSizes)
-    window.AdjustLayoutSizes = adjustLayoutSizes
-
-    -- Force Executor and Info setup instantly
-    window:CreateNativeInfo()
-    window:CreateNativeExecutor()
-    
-    return window
+function CozyUI["\67\114\101\97\116\101\87\105\110\100\111\119"](CozyUI,config)
+ local window = setmetatable({}, CozyUI)
+ window["\84\105\116\108\101"] = config["\78\97\109\101"] or "\67\111\122\121\32\72\117\98"
+ window["\84\97\98\66\117\116\116\111\110\115"] = {}
+ window["\80\97\103\101\115"] = {}
+ window["\67\117\115\116\111\109\84\97\98\115\67\111\117\110\116"] = 0
+ 
+ 
+ local sgui = Instance["\110\101\119"]("\83\99\114\101\101\110\71\117\105")
+ sgui["\78\97\109\101"] = getRandomName()
+ sgui["\82\101\115\101\116\79\110\83\112\97\119\110"] = false
+ sgui["\68\105\115\112\108\97\121\79\114\100\101\114"] = 999
+ 
+ local success, p = pcall(function() return gethui() end)
+ sgui["\80\97\114\101\110\116"] = (success and p) or CoreGui
+ window["\83\99\114\101\101\110\71\117\105"] = sgui
+ 
+ 
+ local mainFrame = Instance["\110\101\119"]("\70\114\97\109\101")
+ mainFrame["\78\97\109\101"] = getRandomName()
+ mainFrame["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ mainFrame["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ mainFrame["\65\99\116\105\118\101"] = true
+ mainFrame["\80\97\114\101\110\116"] = sgui
+ window["\77\97\105\110\70\114\97\109\101"] = mainFrame
+ 
+ 
+ local mainStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ mainStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ mainStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ mainStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ mainStroke["\80\97\114\101\110\116"] = mainFrame
+ 
+ local topBar = Instance["\110\101\119"]("\70\114\97\109\101")
+ topBar["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ topBar["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ topBar["\80\97\114\101\110\116"] = mainFrame
+ 
+ local headerDivider = Instance["\110\101\119"]("\70\114\97\109\101")
+ headerDivider["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ headerDivider["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ headerDivider["\80\97\114\101\110\116"] = topBar
+ local titleLabel = Instance["\110\101\119"]("\84\101\120\116\76\97\98\101\108")
+ titleLabel["\66\97\99\107\103\114\111\117\110\100\84\114\97\110\115\112\97\114\101\110\99\121"] = 1
+ titleLabel["\84\101\120\116"] = window["\84\105\116\108\101"]
+ titleLabel["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ titleLabel["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ titleLabel["\84\101\120\116\83\105\122\101"] = 13
+ titleLabel["\84\101\120\116\88\65\108\105\103\110\109\101\110\116"] = Enum["\84\101\120\116\88\65\108\105\103\110\109\101\110\116"]["\76\101\102\116"]
+ titleLabel["\80\97\114\101\110\116"] = topBar
+ 
+ makeDraggable(mainFrame, topBar)
+ 
+ 
+ local navFrame = Instance["\110\101\119"]("\70\114\97\109\101")
+ navFrame["\66\97\99\107\103\114\111\117\110\100\84\114\97\110\115\112\97\114\101\110\99\121"] = 1
+ navFrame["\80\97\114\101\110\116"] = mainFrame
+ 
+ local navLayout = Instance["\110\101\119"]("\85\73\76\105\115\116\76\97\121\111\117\116")
+ navLayout["\80\97\100\100\105\110\103"] = UDim["\110\101\119"](0, 6)
+ navLayout["\70\105\108\108\68\105\114\101\99\116\105\111\110"] = Enum["\70\105\108\108\68\105\114\101\99\116\105\111\110"]["\86\101\114\116\105\99\97\108"]
+ navLayout["\80\97\114\101\110\116"] = navFrame
+ 
+ 
+ local container = Instance["\110\101\119"]("\70\114\97\109\101")
+ container["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ container["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ container["\80\97\114\101\110\116"] = mainFrame
+ 
+ local containerStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ containerStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ containerStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ containerStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ containerStroke["\80\97\114\101\110\116"] = container
+ window["\78\97\118\70\114\97\109\101"] = navFrame
+ window["\78\97\118\76\97\121\111\117\116"] = navLayout
+ window["\67\111\110\116\97\105\110\101\114"] = container
+ 
+ 
+ local closeBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ closeBtn["\83\105\122\101"] = UDim2["\110\101\119"](0, 20, 0, 20)
+ closeBtn["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](1, -25, 0, 5)
+ closeBtn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ closeBtn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ closeBtn["\84\101\120\116"] = "\88"
+ closeBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ closeBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ closeBtn["\84\101\120\116\83\105\122\101"] = 12
+ closeBtn["\80\97\114\101\110\116"] = topBar
+ 
+ local closeStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ closeStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ closeStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ closeStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ closeStroke["\80\97\114\101\110\116"] = closeBtn
+ 
+ 
+ local miniFrame = Instance["\110\101\119"]("\70\114\97\109\101")
+ miniFrame["\83\105\122\101"] = UDim2["\110\101\119"](0, 60, 0, 30)
+ miniFrame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0.5, -30, 0.1, 0)
+ miniFrame["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ miniFrame["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ miniFrame["\86\105\115\105\98\108\101"] = false
+ miniFrame["\65\99\116\105\118\101"] = true
+ miniFrame["\80\97\114\101\110\116"] = sgui
+ 
+ local miniStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ miniStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ miniStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ miniStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ miniStroke["\80\97\114\101\110\116"] = miniFrame
+ 
+ local miniBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ miniBtn["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 1, 0)
+ miniBtn["\66\97\99\107\103\114\111\117\110\100\84\114\97\110\115\112\97\114\101\110\99\121"] = 1
+ miniBtn["\84\101\120\116"] = "\67\111\122\121"
+ miniBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ miniBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ miniBtn["\84\101\120\116\83\105\122\101"] = 12
+ miniBtn["\80\97\114\101\110\116"] = miniFrame
+ 
+ makeDraggable(miniFrame, miniFrame)
+ 
+ closeBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ mainFrame["\86\105\115\105\98\108\101"] = false
+ miniFrame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, mainFrame["\65\98\115\111\108\117\116\101\80\111\115\105\116\105\111\110"]["\88"] + 10, 0, mainFrame["\65\98\115\111\108\117\116\101\80\111\115\105\116\105\111\110"]["\89"] + 10)
+ miniFrame["\86\105\115\105\98\108\101"] = true
+ end)
+ 
+ miniBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ miniFrame["\86\105\115\105\98\108\101"] = false
+ mainFrame["\86\105\115\105\98\108\101"] = true
+ end)
+ 
+ local camera = Workspace["\67\117\114\114\101\110\116\67\97\109\101\114\97"]
+ local function adjustLayoutSizes()
+ local viewportSize = camera["\86\105\101\119\112\111\114\116\83\105\122\101"]
+ if viewportSize["\88"] <= 768 then
+ 
+ mainFrame["\83\105\122\101"] = UDim2["\110\101\119"](0, 390, 0, 245)
+ mainFrame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0.5, -195, 0.5, -122)
+ 
+ topBar["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 0, 30)
+ topBar["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 0, 0, 0)
+ 
+ titleLabel["\83\105\122\101"] = UDim2["\110\101\119"](1, -40, 1, 0)
+ titleLabel["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 10, 0, 0)
+ 
+ headerDivider["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 0, 1)
+ headerDivider["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 0, 1, -1)
+ 
+ navFrame["\83\105\122\101"] = UDim2["\110\101\119"](1, -20, 0, 30)
+ navFrame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 10, 0, 36)
+ navLayout["\70\105\108\108\68\105\114\101\99\116\105\111\110"] = Enum["\70\105\108\108\68\105\114\101\99\116\105\111\110"]["\72\111\114\105\122\111\110\116\97\108"]
+ 
+ container["\83\105\122\101"] = UDim2["\110\101\119"](1, -20, 1, -80)
+ container["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 10, 0, 72)
+ else
+ 
+ mainFrame["\83\105\122\101"] = UDim2["\110\101\119"](0, 560, 0, 340)
+ mainFrame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0.5, -280, 0.5, -170)
+ 
+ topBar["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 0, 32)
+ topBar["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 0, 0, 0)
+ 
+ titleLabel["\83\105\122\101"] = UDim2["\110\101\119"](1, -40, 1, 0)
+ titleLabel["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 12, 0, 0)
+ 
+ headerDivider["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 0, 1)
+ headerDivider["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 0, 1, -1)
+ 
+ navFrame["\83\105\122\101"] = UDim2["\110\101\119"](0, 110, 1, -44)
+ navFrame["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 10, 0, 38)
+ navLayout["\70\105\108\108\68\105\114\101\99\116\105\111\110"] = Enum["\70\105\108\108\68\105\114\101\99\116\105\111\110"]["\86\101\114\116\105\99\97\108"]
+ 
+ container["\83\105\122\101"] = UDim2["\110\101\119"](1, -142, 1, -44)
+ container["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 132, 0, 38)
+ end
+ 
+ 
+ for _, btn in pairs(window["\84\97\98\66\117\116\116\111\110\115"]) do
+ if navLayout["\70\105\108\108\68\105\114\101\99\116\105\111\110"] == Enum["\70\105\108\108\68\105\114\101\99\116\105\111\110"]["\72\111\114\105\122\111\110\116\97\108"] then
+ btn["\83\105\122\101"] = UDim2["\110\101\119"](0, 70, 1, 0)
+ else
+ btn["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 0, 28)
+ end
+ end
+ end
+ 
+ adjustLayoutSizes()
+ camera["\71\101\116\80\114\111\112\101\114\116\121\67\104\97\110\103\101\100\83\105\103\110\97\108"](camera,"\86\105\101\119\112\111\114\116\83\105\122\101")["\67\111\110\110\101\99\116"](adjustLayoutSizes)
+ window["\65\100\106\117\115\116\76\97\121\111\117\116\83\105\122\101\115"] = adjustLayoutSizes
+ 
+ window["\67\114\101\97\116\101\78\97\116\105\118\101\73\110\102\111"](window,)
+ window["\67\114\101\97\116\101\78\97\116\105\118\101\69\120\101\99\117\116\111\114"](window,)
+ 
+ return window
 end
-
-function CozyUI:CreateTab(tabName)
-    local tab = {}
-    local window = self
-    window.CustomTabsCount = window.CustomTabsCount + 1
-    
-    -- Custom Script Square Tab Button
-    local tabBtn = Instance.new("TextButton")
-    tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    tabBtn.BorderSizePixel = 0
-    tabBtn.Text = tabName
-    tabBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
-    tabBtn.Font = Enum.Font.Code
-    tabBtn.TextSize = 11
-    tabBtn.LayoutOrder = window.CustomTabsCount -- Kept at the top
-    tabBtn.Parent = self.NavFrame
-    
-    local btnStroke = Instance.new("UIStroke")
-    btnStroke.Thickness = 1
-    btnStroke.Color = Color3.fromRGB(80, 80, 80)
-    btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    btnStroke.Parent = tabBtn
-    
-    table.insert(window.TabButtons, tabBtn)
-
-    -- Viewport Page Container
-    local page = Instance.new("ScrollingFrame")
-    page.Size = UDim2.new(1, -12, 1, -12)
-    page.Position = UDim2.new(0, 6, 0, 6)
-    page.BackgroundTransparency = 1
-    page.Visible = false
-    page.CanvasSize = UDim2.new(0, 0, 0, 0)
-    page.AutomaticSize = Enum.AutomaticSize.Y
-    page.ScrollBarThickness = 2
-    page.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-    page.BorderSizePixel = 0
-    page.Parent = self.Container
-    
-    local pageLayout = Instance.new("UIListLayout")
-    pageLayout.Padding = UDim.new(0, 6)
-    pageLayout.Parent = page
-    
-    table.insert(window.Pages, page)
-    
-    local function selectThisTab()
-        for _, p in pairs(window.Pages) do p.Visible = false end
-        for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(130, 130, 130)
-            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
-        end
-        page.Visible = true
-        tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tabBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    end
-    
-    tabBtn.MouseButton1Click:Connect(selectThisTab)
-    if #window.Pages == 1 then selectThisTab() end
-    
-    -- Adds buttons inside this tab layout
-    function tab:CreateButton(name, callback)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -4, 0, 28)
-        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        btn.BorderSizePixel = 0
-        btn.Text = name
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        btn.Font = Enum.Font.Code
-        btn.TextSize = 11
-        btn.Parent = page
-        
-        local s = Instance.new("UIStroke")
-        s.Thickness = 1
-        s.Color = Color3.fromRGB(255, 255, 255)
-        s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        s.Parent = btn
-        
-        btn.MouseButton1Click:Connect(function()
-            pcall(callback)
-        end)
-    end
-    
-    -- Dynamically realigns dimensions of buttons inside NavFrame
-    window.AdjustLayoutSizes()
-    
-    return tab
+function CozyUI["\67\114\101\97\116\101\84\97\98"](CozyUI,tabName)
+ local tab = {}
+ local window = self
+ window["\67\117\115\116\111\109\84\97\98\115\67\111\117\110\116"] = window["\67\117\115\116\111\109\84\97\98\115\67\111\117\110\116"] + 1
+ 
+ 
+ local tabBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ tabBtn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ tabBtn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ tabBtn["\84\101\120\116"] = tabName
+ tabBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](130, 130, 130)
+ tabBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ tabBtn["\84\101\120\116\83\105\122\101"] = 11
+ tabBtn["\76\97\121\111\117\116\79\114\100\101\114"] = window["\67\117\115\116\111\109\84\97\98\115\67\111\117\110\116"] 
+ tabBtn["\80\97\114\101\110\116"] = self["\78\97\118\70\114\97\109\101"]
+ 
+ local btnStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ btnStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ btnStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](80, 80, 80)
+ btnStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ btnStroke["\80\97\114\101\110\116"] = tabBtn
+ 
+ table["\105\110\115\101\114\116"](window["\84\97\98\66\117\116\116\111\110\115"], tabBtn)
+ 
+ local page = Instance["\110\101\119"]("\83\99\114\111\108\108\105\110\103\70\114\97\109\101")
+ page["\83\105\122\101"] = UDim2["\110\101\119"](1, -12, 1, -12)
+ page["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 6, 0, 6)
+ page["\66\97\99\107\103\114\111\117\110\100\84\114\97\110\115\112\97\114\101\110\99\121"] = 1
+ page["\86\105\115\105\98\108\101"] = false
+ page["\67\97\110\118\97\115\83\105\122\101"] = UDim2["\110\101\119"](0, 0, 0, 0)
+ page["\65\117\116\111\109\97\116\105\99\83\105\122\101"] = Enum["\65\117\116\111\109\97\116\105\99\83\105\122\101"]["\89"]
+ page["\83\99\114\111\108\108\66\97\114\84\104\105\99\107\110\101\115\115"] = 2
+ page["\83\99\114\111\108\108\66\97\114\73\109\97\103\101\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ page["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ page["\80\97\114\101\110\116"] = self["\67\111\110\116\97\105\110\101\114"]
+ 
+ local pageLayout = Instance["\110\101\119"]("\85\73\76\105\115\116\76\97\121\111\117\116")
+ pageLayout["\80\97\100\100\105\110\103"] = UDim["\110\101\119"](0, 6)
+ pageLayout["\80\97\114\101\110\116"] = page
+ 
+ table["\105\110\115\101\114\116"](window["\80\97\103\101\115"], page)
+ 
+ local function selectThisTab()
+ for _, p in pairs(window["\80\97\103\101\115"]) do p["\86\105\115\105\98\108\101"] = false end
+ for _, b in pairs(window["\84\97\98\66\117\116\116\111\110\115"]) do 
+ b["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](130, 130, 130)
+ b["\85\73\83\116\114\111\107\101"]["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](80, 80, 80)
+ end
+ page["\86\105\115\105\98\108\101"] = true
+ tabBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ tabBtn["\85\73\83\116\114\111\107\101"]["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ end
+ 
+ tabBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](selectThisTab)
+ if #window["\80\97\103\101\115"] == 1 then selectThisTab() end
+ 
+ 
+ function tab["\67\114\101\97\116\101\66\117\116\116\111\110"](tab,name, callback)
+ local btn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ btn["\83\105\122\101"] = UDim2["\110\101\119"](1, -4, 0, 28)
+ btn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ btn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ btn["\84\101\120\116"] = name
+ btn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ btn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ btn["\84\101\120\116\83\105\122\101"] = 11
+ btn["\80\97\114\101\110\116"] = page
+ 
+ local s = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ s["\84\104\105\99\107\110\101\115\115"] = 1
+ s["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ s["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ s["\80\97\114\101\110\116"] = btn
+ 
+ btn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ pcall(callback)
+ end)
+ end
+ 
+ 
+ window["\65\100\106\117\115\116\76\97\121\111\117\116\83\105\122\101\115"]()
+ 
+ return tab
 end
-
--- Integrated Native Executor Tab (Always Forced to Bottom)
-function CozyUI:CreateNativeExecutor()
-    local window = self
-    
-    local execBtn = Instance.new("TextButton")
-    execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    execBtn.BorderSizePixel = 0
-    execBtn.Text = "Executor"
-    execBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
-    execBtn.Font = Enum.Font.Code
-    execBtn.TextSize = 11
-    execBtn.LayoutOrder = 999 -- Stays at the absolute bottom
-    execBtn.Parent = self.NavFrame
-    
-    local exStroke = Instance.new("UIStroke")
-    exStroke.Thickness = 1
-    exStroke.Color = Color3.fromRGB(80, 80, 80)
-    exStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    exStroke.Parent = execBtn
-    table.insert(window.TabButtons, execBtn)
-
-    local execPage = Instance.new("Frame")
-    execPage.Size = UDim2.new(1, -12, 1, -12)
-    execPage.Position = UDim2.new(0, 6, 0, 6)
-    execPage.BackgroundTransparency = 1
-    execPage.Visible = false
-    execPage.Parent = self.Container
-    table.insert(window.Pages, execPage)
-    
-    local textBox = Instance.new("TextBox")
-    textBox.Size = UDim2.new(1, 0, 1, -34)
-    textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    textBox.BorderSizePixel = 0
-    textBox.ClearTextOnFocus = false
-    textBox.MultiLine = true
-    textBox.Text = "-- Code execution lines..."
-    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.Font = Enum.Font.Code
-    textBox.TextSize = 10
-    textBox.TextXAlignment = Enum.TextXAlignment.Left
-    textBox.TextYAlignment = Enum.TextYAlignment.Top
-    textBox.Parent = execPage
-    
-    local tStroke = Instance.new("UIStroke")
-    tStroke.Thickness = 1
-    tStroke.Color = Color3.fromRGB(255, 255, 255)
-    tStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    tStroke.Parent = textBox
-    
-    local runBtn = Instance.new("TextButton")
-    runBtn.Size = UDim2.new(0.5, -3, 0, 28)
-    runBtn.Position = UDim2.new(0, 0, 1, -28)
-    runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    runBtn.BorderSizePixel = 0
-    runBtn.Text = "Execute"
-    runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    runBtn.Font = Enum.Font.Code
-    runBtn.TextSize = 11
-    runBtn.Parent = execPage
-    
-    local rbStroke = Instance.new("UIStroke")
-    rbStroke.Thickness = 1
-    rbStroke.Color = Color3.fromRGB(255, 255, 255)
-    rbStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    rbStroke.Parent = runBtn
-    
-    local clearBtn = Instance.new("TextButton")
-    clearBtn.Size = UDim2.new(0.5, -3, 0, 28)
-    clearBtn.Position = UDim2.new(0.5, 3, 1, -28)
-    clearBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    clearBtn.BorderSizePixel = 0
-    clearBtn.Text = "Clear"
-    clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    clearBtn.Font = Enum.Font.Code
-    clearBtn.TextSize = 11
-    clearBtn.Parent = execPage
-    
-    local cbStroke = Instance.new("UIStroke")
-    cbStroke.Thickness = 1
-    cbStroke.Color = Color3.fromRGB(255, 255, 255)
-    cbStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    cbStroke.Parent = clearBtn
-    
-    runBtn.MouseButton1Click:Connect(function()
-        local code = textBox.Text
-        if code and code ~= "" then
-            local func, err = loadstring(code)
-            if func then task.spawn(func) end
-        end
-    end)
-    
-    clearBtn.MouseButton1Click:Connect(function()
-        textBox.Text = ""
-    end)
-
-    execBtn.MouseButton1Click:Connect(function()
-        for _, p in pairs(window.Pages) do p.Visible = false end
-        for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(130, 130, 130)
-            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
-        end
-        execPage.Visible = true
-        execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        execBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    end)
+function CozyUI["\67\114\101\97\116\101\78\97\116\105\118\101\69\120\101\99\117\116\111\114"](CozyUI,)
+ local window = self
+ 
+ local execBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ execBtn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ execBtn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ execBtn["\84\101\120\116"] = "\69\120\101\99\117\116\111\114"
+ execBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](130, 130, 130)
+ execBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ execBtn["\84\101\120\116\83\105\122\101"] = 11
+ execBtn["\76\97\121\111\117\116\79\114\100\101\114"] = 999 
+ execBtn["\80\97\114\101\110\116"] = self["\78\97\118\70\114\97\109\101"]
+ 
+ local exStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ exStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ exStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](80, 80, 80)
+ exStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ exStroke["\80\97\114\101\110\116"] = execBtn
+ table["\105\110\115\101\114\116"](window["\84\97\98\66\117\116\116\111\110\115"], execBtn)
+ local execPage = Instance["\110\101\119"]("\70\114\97\109\101")
+ execPage["\83\105\122\101"] = UDim2["\110\101\119"](1, -12, 1, -12)
+ execPage["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 6, 0, 6)
+ execPage["\66\97\99\107\103\114\111\117\110\100\84\114\97\110\115\112\97\114\101\110\99\121"] = 1
+ execPage["\86\105\115\105\98\108\101"] = false
+ execPage["\80\97\114\101\110\116"] = self["\67\111\110\116\97\105\110\101\114"]
+ table["\105\110\115\101\114\116"](window["\80\97\103\101\115"], execPage)
+ 
+ local textBox = Instance["\110\101\119"]("\84\101\120\116\66\111\120")
+ textBox["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 1, -34)
+ textBox["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ textBox["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ textBox["\67\108\101\97\114\84\101\120\116\79\110\70\111\99\117\115"] = false
+ textBox["\77\117\108\116\105\76\105\110\101"] = true
+ textBox["\84\101\120\116"] = "\45\45\32\67\111\100\101\32\101\120\101\99\117\116\105\111\110\32\108\105\110\101\115\46\46\46"
+ textBox["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ textBox["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ textBox["\84\101\120\116\83\105\122\101"] = 10
+ textBox["\84\101\120\116\88\65\108\105\103\110\109\101\110\116"] = Enum["\84\101\120\116\88\65\108\105\103\110\109\101\110\116"]["\76\101\102\116"]
+ textBox["\84\101\120\116\89\65\108\105\103\110\109\101\110\116"] = Enum["\84\101\120\116\89\65\108\105\103\110\109\101\110\116"]["\84\111\112"]
+ textBox["\80\97\114\101\110\116"] = execPage
+ 
+ local tStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ tStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ tStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ tStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ tStroke["\80\97\114\101\110\116"] = textBox
+ 
+ local runBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ runBtn["\83\105\122\101"] = UDim2["\110\101\119"](0.5, -3, 0, 28)
+ runBtn["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 0, 1, -28)
+ runBtn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ runBtn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ runBtn["\84\101\120\116"] = "\69\120\101\99\117\116\101"
+ runBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ runBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ runBtn["\84\101\120\116\83\105\122\101"] = 11
+ runBtn["\80\97\114\101\110\116"] = execPage
+ 
+ local rbStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ rbStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ rbStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ rbStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ rbStroke["\80\97\114\101\110\116"] = runBtn
+ 
+ local clearBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ clearBtn["\83\105\122\101"] = UDim2["\110\101\119"](0.5, -3, 0, 28)
+ clearBtn["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0.5, 3, 1, -28)
+ clearBtn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ clearBtn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ clearBtn["\84\101\120\116"] = "\67\108\101\97\114"
+ clearBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ clearBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ clearBtn["\84\101\120\116\83\105\122\101"] = 11
+ clearBtn["\80\97\114\101\110\116"] = execPage
+ 
+ local cbStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ cbStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ cbStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ cbStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ cbStroke["\80\97\114\101\110\116"] = clearBtn
+ 
+ runBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ local code = textBox["\84\101\120\116"]
+ if code and code ~= "" then
+ local func, err = loadstring(code)
+ if func then task["\115\112\97\119\110"](func) end
+ end
+ end)
+ 
+ clearBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ textBox["\84\101\120\116"] = ""
+ end)
+ execBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ for _, p in pairs(window["\80\97\103\101\115"]) do p["\86\105\115\105\98\108\101"] = false end
+ for _, b in pairs(window["\84\97\98\66\117\116\116\111\110\115"]) do 
+ b["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](130, 130, 130)
+ b["\85\73\83\116\114\111\107\101"]["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](80, 80, 80)
+ end
+ execPage["\86\105\115\105\98\108\101"] = true
+ execBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ execBtn["\85\73\83\116\114\111\107\101"]["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ end)
 end
-
--- Integrated Native Info Viewport Tab (Always Forced Above Executor)
-function CozyUI:CreateNativeInfo()
-    local window = self
-    
-    local infoBtn = Instance.new("TextButton")
-    infoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    infoBtn.BorderSizePixel = 0
-    infoBtn.Text = "Info"
-    infoBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
-    infoBtn.Font = Enum.Font.Code
-    infoBtn.TextSize = 11
-    infoBtn.LayoutOrder = 998 -- Forced directly above the Executor
-    infoBtn.Parent = self.NavFrame
-    
-    local infStroke = Instance.new("UIStroke")
-    infStroke.Thickness = 1
-    infStroke.Color = Color3.fromRGB(80, 80, 80)
-    infStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    infStroke.Parent = infoBtn
-    table.insert(window.TabButtons, infoBtn)
-
-    local infoPage = Instance.new("Frame")
-    infoPage.Size = UDim2.new(1, -12, 1, -12)
-    infoPage.Position = UDim2.new(0, 6, 0, 6)
-    infoPage.BackgroundTransparency = 1
-    infoPage.Visible = false
-    infoPage.Parent = self.Container
-    table.insert(window.Pages, infoPage)
-
-    local viewport = Instance.new("ViewportFrame")
-    viewport.Size = UDim2.new(1, 0, 1, 0)
-    viewport.Position = UDim2.new(0, 0, 0, 0)
-    viewport.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    viewport.BorderSizePixel = 0
-    viewport.Parent = infoPage
-    
-    local vStroke = Instance.new("UIStroke")
-    vStroke.Thickness = 1
-    vStroke.Color = Color3.fromRGB(255, 255, 255)
-    vStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    vStroke.Parent = viewport
-    
-    task.spawn(function()
-        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        char.Archivable = true
-        task.wait(0.5)
-        local clone = char:Clone()
-        clone.Parent = viewport
-        
-        local hrp = clone:WaitForChild("HumanoidRootPart")
-        local cam = Instance.new("Camera")
-        viewport.CurrentCamera = cam
-        cam.Parent = viewport
-        
-        local rotAngle = 0
-        game:GetService("RunService").Heartbeat:Connect(function()
-            rotAngle = rotAngle + 1
-            cam.CFrame = CFrame.new(hrp.Position + Vector3.new(math.sin(math.rad(rotAngle)) * 5, 2, math.cos(math.rad(rotAngle)) * 5), hrp.Position)
-        end)
-    end)
-
-    infoBtn.MouseButton1Click:Connect(function()
-        for _, p in pairs(window.Pages) do p.Visible = false end
-        for _, b in pairs(window.TabButtons) do 
-            b.TextColor3 = Color3.fromRGB(130, 130, 130)
-            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
-        end
-        infoPage.Visible = true
-        infoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        infoBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    end)
+function CozyUI["\67\114\101\97\116\101\78\97\116\105\118\101\73\110\102\111"](CozyUI,)
+ local window = self
+ 
+ local infoBtn = Instance["\110\101\119"]("\84\101\120\116\66\117\116\116\111\110")
+ infoBtn["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ infoBtn["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ infoBtn["\84\101\120\116"] = "\73\110\102\111"
+ infoBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](130, 130, 130)
+ infoBtn["\70\111\110\116"] = Enum["\70\111\110\116"]["\67\111\100\101"]
+ infoBtn["\84\101\120\116\83\105\122\101"] = 11
+ infoBtn["\76\97\121\111\117\116\79\114\100\101\114"] = 998 
+ infoBtn["\80\97\114\101\110\116"] = self["\78\97\118\70\114\97\109\101"]
+ 
+ local infStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ infStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ infStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](80, 80, 80)
+ infStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ infStroke["\80\97\114\101\110\116"] = infoBtn
+ table["\105\110\115\101\114\116"](window["\84\97\98\66\117\116\116\111\110\115"], infoBtn)
+ local infoPage = Instance["\110\101\119"]("\70\114\97\109\101")
+ infoPage["\83\105\122\101"] = UDim2["\110\101\119"](1, -12, 1, -12)
+ infoPage["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 6, 0, 6)
+ infoPage["\66\97\99\107\103\114\111\117\110\100\84\114\97\110\115\112\97\114\101\110\99\121"] = 1
+ infoPage["\86\105\115\105\98\108\101"] = false
+ infoPage["\80\97\114\101\110\116"] = self["\67\111\110\116\97\105\110\101\114"]
+ table["\105\110\115\101\114\116"](window["\80\97\103\101\115"], infoPage)
+ local viewport = Instance["\110\101\119"]("\86\105\101\119\112\111\114\116\70\114\97\109\101")
+ viewport["\83\105\122\101"] = UDim2["\110\101\119"](1, 0, 1, 0)
+ viewport["\80\111\115\105\116\105\111\110"] = UDim2["\110\101\119"](0, 0, 0, 0)
+ viewport["\66\97\99\107\103\114\111\117\110\100\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](0, 0, 0)
+ viewport["\66\111\114\100\101\114\83\105\122\101\80\105\120\101\108"] = 0
+ viewport["\80\97\114\101\110\116"] = infoPage
+ 
+ local vStroke = Instance["\110\101\119"]("\85\73\83\116\114\111\107\101")
+ vStroke["\84\104\105\99\107\110\101\115\115"] = 1
+ vStroke["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ vStroke["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"] = Enum["\65\112\112\108\121\83\116\114\111\107\101\77\111\100\101"]["\66\111\114\100\101\114"]
+ vStroke["\80\97\114\101\110\116"] = viewport
+ 
+ task["\115\112\97\119\110"](function()
+ local char = LocalPlayer["\67\104\97\114\97\99\116\101\114"] or LocalPlayer["\67\104\97\114\97\99\116\101\114\65\100\100\101\100"]["\87\97\105\116"]()
+ char["\65\114\99\104\105\118\97\98\108\101"] = true
+ task["\119\97\105\116"](0.5)
+ local clone = char["\67\108\111\110\101"](char,)
+ clone["\80\97\114\101\110\116"] = viewport
+ 
+ local hrp = clone["\87\97\105\116\70\111\114\67\104\105\108\100"](clone,"\72\117\109\97\110\111\105\100\82\111\111\116\80\97\114\116")
+ local cam = Instance["\110\101\119"]("\67\97\109\101\114\97")
+ viewport["\67\117\114\114\101\110\116\67\97\109\101\114\97"] = cam
+ cam["\80\97\114\101\110\116"] = viewport
+ 
+ local rotAngle = 0
+ game["\71\101\116\83\101\114\118\105\99\101"](game,"\82\117\110\83\101\114\118\105\99\101")["\72\101\97\114\116\98\101\97\116"]["\67\111\110\110\101\99\116"](function()
+ rotAngle = rotAngle + 1
+ cam["\67\70\114\97\109\101"] = CFrame["\110\101\119"](hrp["\80\111\115\105\116\105\111\110"] + Vector3["\110\101\119"](math["\115\105\110"](math["\114\97\100"](rotAngle)) * 5, 2, math["\99\111\115"](math["\114\97\100"](rotAngle)) * 5), hrp["\80\111\115\105\116\105\111\110"])
+ end)
+ end)
+ infoBtn["\77\111\117\115\101\66\117\116\116\111\110\49\67\108\105\99\107"]["\67\111\110\110\101\99\116"](function()
+ for _, p in pairs(window["\80\97\103\101\115"]) do p["\86\105\115\105\98\108\101"] = false end
+ for _, b in pairs(window["\84\97\98\66\117\116\116\111\110\115"]) do 
+ b["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](130, 130, 130)
+ b["\85\73\83\116\114\111\107\101"]["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](80, 80, 80)
+ end
+ infoPage["\86\105\115\105\98\108\101"] = true
+ infoBtn["\84\101\120\116\67\111\108\111\114\51"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ infoBtn["\85\73\83\116\114\111\107\101"]["\67\111\108\111\114"] = Color3["\102\114\111\109\82\71\66"](255, 255, 255)
+ end)
 end
-
 return CozyUI
-
