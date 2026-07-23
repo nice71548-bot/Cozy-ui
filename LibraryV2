@@ -1,0 +1,925 @@
+local CozyUI = {}
+CozyUI.__index = CozyUI
+
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local function getRandomName()
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    local name = ""
+    for i = 1, 14 do
+        local rand = math.random(1, #chars)
+        name = name .. string.sub(chars, rand, rand)
+    end
+    return name
+end
+
+local function makeDraggable(frame, handle)
+    local dragging, dragInput, dragStart, startPos
+    
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X, 
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+function CozyUI:CreateWindow(config)
+    local window = setmetatable({}, CozyUI)
+    window.Title = config.Name or "Cozy Hub"
+    window.TabButtons = {}
+    window.Pages = {}
+    window.CustomTabsCount = 0
+    
+    local sgui = Instance.new("ScreenGui")
+    sgui.Name = getRandomName()
+    sgui.ResetOnSpawn = false
+    sgui.DisplayOrder = 999
+    window.ScreenGui = sgui 
+    -- [P1 Bounding Complete: Parent assignment deferred to P2 forced loader]
+    
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = getRandomName()
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Active = true
+    mainFrame.Parent = sgui
+    window.MainFrame = mainFrame
+    
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Thickness = 1
+    mainStroke.Color = Color3.fromRGB(255, 255, 255)
+    mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    mainStroke.Parent = mainFrame
+
+    local topBar = Instance.new("Frame")
+    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    topBar.BorderSizePixel = 0
+    topBar.Parent = mainFrame
+    
+    local headerDivider = Instance.new("Frame")
+    headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    headerDivider.BorderSizePixel = 0
+    headerDivider.Parent = topBar
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.BackgroundTransparency = 1
+    ```lua
+local CozyUI = {}
+CozyUI.__index = CozyUI
+
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local function getRandomName()
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    local name = ""
+    for i = 1, 14 do
+        local rand = math.random(1, #chars)
+        name = name .. string.sub(chars, rand, rand)
+    end
+    return name
+end
+
+local function makeDraggable(frame, handle)
+    local dragging, dragInput, dragStart, startPos
+    
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X, 
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+function CozyUI:CreateWindow(config)
+    local window = setmetatable({}, CozyUI)
+    window.Title = config.Name or "Cozy Hub"
+    window.TabButtons = {}
+    window.Pages = {}
+    window.CustomTabsCount = 0
+    
+    local sgui = Instance.new("ScreenGui")
+    sgui.Name = getRandomName()
+    sgui.ResetOnSpawn = false
+    sgui.DisplayOrder = 999
+    window.ScreenGui = sgui
+    
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = getRandomName()
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Active = true
+    mainFrame.Parent = sgui
+    window.MainFrame = mainFrame
+    
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Thickness = 1
+    mainStroke.Color = Color3.fromRGB(255, 255, 255)
+    mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    mainStroke.Parent = mainFrame
+
+    local topBar = Instance.new("Frame")
+    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    topBar.BorderSizePixel = 0
+    topBar.Parent = mainFrame
+    
+    local headerDivider = Instance.new("Frame")
+    headerDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    headerDivider.BorderSizePixel = 0
+    headerDivider.Parent = topBar
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = window.Title
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.Code
+    titleLabel.TextSize = 13
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = topBar
+    
+    local subTitleLabel = Instance.new("TextLabel")
+    subTitleLabel.BackgroundTransparency = 1
+    subTitleLabel.Text = "Cozy library"
+    subTitleLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+    subTitleLabel.Font = Enum.Font.Code
+    subTitleLabel.TextSize = 10
+    subTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    subTitleLabel.Parent = topBar
+    
+    makeDraggable(mainFrame, topBar)
+    
+    local navFrame = Instance.new("Frame")
+    navFrame.BackgroundTransparency = 1
+    navFrame.Parent = mainFrame
+    
+    local navLayout = Instance.new("UIListLayout")
+    navLayout.Padding = UDim.new(0, 6)
+    navLayout.FillDirection = Enum.FillDirection.Vertical
+    navLayout.Parent = navFrame
+    
+    local container = Instance.new("Frame")
+    container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    container.BorderSizePixel = 0
+    container.Parent = mainFrame
+    
+    local containerStroke = Instance.new("UIStroke")
+    containerStroke.Thickness = 1
+    containerStroke.Color = Color3.fromRGB(255, 255, 255)
+    containerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    containerStroke.Parent = container
+
+    window.NavFrame = navFrame
+    window.NavLayout = navLayout
+    window.Container = container
+    
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 20, 0, 20)
+    closeBtn.Position = UDim2.new(1, -25, 0, 8)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    closeBtn.BorderSizePixel = 0
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.Font = Enum.Font.Code
+    closeBtn.TextSize = 12
+    closeBtn.Parent = topBar
+    
+    local closeStroke = Instance.new("UIStroke")
+    closeStroke.Thickness = 1
+    closeStroke.Color = Color3.fromRGB(255, 255, 255)
+    closeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    closeStroke.Parent = closeBtn
+    
+    local miniFrame = Instance.new("Frame")
+    miniFrame.Size = UDim2.new(0, 60, 0, 30)
+    miniFrame.Position = UDim2.new(0.5, -30, 0.1, 0)
+    miniFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    miniFrame.BorderSizePixel = 0
+    miniFrame.Visible = false
+    miniFrame.Active = true
+    miniFrame.Parent = sgui
+    
+    local miniStroke = Instance.new("UIStroke")
+    miniStroke.Thickness = 1
+    miniStroke.Color = Color3.fromRGB(255, 255, 255)
+    miniStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    miniStroke.Parent = miniFrame
+    
+    local miniBtn = Instance.new("TextButton")
+    miniBtn.Size = UDim2.new(1, 0, 1, 0)
+    miniBtn.BackgroundTransparency = 1
+    miniBtn.Text = "Cozy"
+    miniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    miniBtn.Font = Enum.Font.Code
+    miniBtn.TextSize = 12
+    miniBtn.Parent = miniFrame
+    
+    makeDraggable(miniFrame, miniFrame)
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        mainFrame.Visible = false
+        miniFrame.Position = UDim2.new(0, mainFrame.AbsolutePosition.X + 10, 0, mainFrame.AbsolutePosition.Y + 10)
+        miniFrame.Visible = true
+    end)
+    
+    miniBtn.MouseButton1Click:Connect(function()
+        miniFrame.Visible = false
+        mainFrame.Visible = true
+    end)
+
+    local camera = Workspace.CurrentCamera
+    local function adjustLayoutSizes()
+        local viewportSize = camera.ViewportSize
+        if viewportSize.X <= 768 then
+            mainFrame.Size = UDim2.new(0, 390, 0, 245)
+            mainFrame.Position = UDim2.new(0.5, -195, 0.5, -122)
+            
+            topBar.Size = UDim2.new(1, 0, 0, 36)
+            titleLabel.Size = UDim2.new(1, -40, 0, 18)
+            titleLabel.Position = UDim2.new(0, 10, 0, 2)
+            subTitleLabel.Size = UDim2.new(1, -40, 0, 12)
+            subTitleLabel.Position = UDim2.new(0, 10, 0, 18)
+            
+            headerDivider.Size = UDim2.new(1, 0, 0, 1)
+            headerDivider.Position = UDim2.new(0, 0, 1, -1)
+            
+            navFrame.Size = UDim2.new(1, -20, 0, 30)
+            navFrame.Position = UDim2.new(0, 10, 0, 42)
+            navLayout.FillDirection = Enum.FillDirection.Horizontal
+            
+            container.Size = UDim2.new(1, -20, 1, -86)
+            container.Position = UDim2.new(0, 10, 0, 78)
+        else
+            mainFrame.Size = UDim2.new(0, 560, 0, 340)
+            mainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
+            
+            topBar.Size = UDim2.new(1, 0, 0, 38)
+            titleLabel.Size = UDim2.new(1, -40, 0, 20)
+            titleLabel.Position = UDim2.new(0, 12, 0, 2)
+            subTitleLabel.Size = UDim2.new(1, -40, 0, 12)
+            subTitleLabel.Position = UDim2.new(0, 12, 0, 20)
+            
+            headerDivider.Size = UDim2.new(1, 0, 0, 1)
+            headerDivider.Position = UDim2.new(0, 0, 1, -1)
+            
+            navFrame.Size = UDim2.new(0, 110, 1, -52)
+            navFrame.Position = UDim2.new(0, 10, 0, 44)
+            navLayout.FillDirection = Enum.FillDirection.Vertical
+            
+            container.Size = UDim2.new(1, -142, 1, -52)
+            container.Position = UDim2.new(0, 132, 0, 44)
+        end
+        
+        for _, btn in pairs(window.TabButtons) do
+            if navLayout.FillDirection == Enum.FillDirection.Horizontal then
+                btn.Size = UDim2.new(0, 70, 1, 0)
+            else
+                btn.Size = UDim2.new(1, 0, 0, 28)
+            end
+        end
+    end
+    
+    adjustLayoutSizes()
+    camera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustLayoutSizes)
+    window.AdjustLayoutSizes = adjustLayoutSizes
+
+    window:CreateNativeInfo()
+    window:CreateNativeExecutor()
+    
+    return window
+end
+
+function CozyUI:CreateTab(tabName)
+    local tab = {}
+    local window = self
+    window.CustomTabsCount = window.CustomTabsCount + 1
+    
+    local tabBtn = Instance.new("TextButton")
+    tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabBtn.BorderSizePixel = 0
+    tabBtn.Text = tabName
+    tabBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+    tabBtn.Font = Enum.Font.Code
+    tabBtn.TextSize = 11
+    tabBtn.LayoutOrder = window.CustomTabsCount
+    tabBtn.Parent = self.NavFrame
+    
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Thickness = 1
+    btnStroke.Color = Color3.fromRGB(80, 80, 80)
+    btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    btnStroke.Parent = tabBtn
+    
+    table.insert(window.TabButtons, tabBtn)
+
+    local page = Instance.new("ScrollingFrame")
+    page.Size = UDim2.new(1, -12, 1, -12)
+    page.Position = UDim2.new(0, 6, 0, 6)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.ClipsDescendants = true 
+    page.CanvasSize = UDim2.new(0, 0, 0, 0)
+    page.ScrollBarThickness = 2
+    page.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+    page.BorderSizePixel = 0
+    page.Parent = self.Container
+    
+    local pageLayout = Instance.new("UIListLayout")
+    pageLayout.Padding = UDim.new(0, 6)
+    pageLayout.Parent = page
+    
+    pageLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        page.CanvasSize = UDim2.new(0, 0, 0, pageLayout.AbsoluteContentSize.Y + 10)
+    end)
+    
+    table.insert(window.Pages, page)
+    
+    local function selectThisTab()
+        for _, p in pairs(window.Pages) do p.Visible = false end
+        for _, b in pairs(window.TabButtons) do 
+            b.TextColor3 = Color3.fromRGB(130, 130, 130)
+            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
+        end
+        page.Visible = true
+        tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    end
+    
+    tabBtn.MouseButton1Click:Connect(selectThisTab)
+    if #window.Pages == 1 then selectThisTab() end
+    
+    function tab:CreateButton(name, callback)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -4, 0, 28)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        btn.BorderSizePixel = 0
+        btn.Text = name
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.Font = Enum.Font.Code
+        btn.TextSize = 11
+        btn.Parent = page
+        
+        local s = Instance.new("UIStroke")
+        s.Thickness = 1
+        s.Color = Color3.fromRGB(255, 255, 255)
+        s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        s.Parent = btn
+        
+        btn.MouseButton1Click:Connect(function()
+            btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            task.wait(0.05)
+            btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            pcall(callback)
+        end)
+    end
+    
+    function tab:CreateToggle(name, callback)
+        local toggled = false
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -4, 0, 28)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        btn.BorderSizePixel = 0
+        btn.Text = name .. " : [ OFF ]"
+        btn.TextColor3 = Color3.fromRGB(150, 150, 150)
+        btn.Font = Enum.Font.Code
+        btn.TextSize = 11
+        btn.Parent = page
+        
+        local s = Instance.new("UIStroke")
+        s.Thickness = 1
+        s.Color = Color3.fromRGB(150, 150, 150)
+        s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        s.Parent = btn
+        
+        btn.MouseButton1Click:Connect(function()
+            toggled = not toggled
+            if toggled then
+                btn.Text = name .. " : [ ON ]"
+                btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                s.Color = Color3.fromRGB(255, 255, 255)
+            else
+                btn.Text = name .. " : [ OFF ]"
+                btn.TextColor3 = Color3.fromRGB(150, 150, 150)
+                s.Color = Color3.fromRGB(150, 150, 150)
+            end
+            pcall(callback, toggled)
+        end)
+    end
+    
+    window.AdjustLayoutSizes()
+    
+    return tab
+end
+
+function CozyUI:CreateNativeExecutor()
+    local window = self
+    
+    local execBtn = Instance.new("TextButton")
+    execBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    execBtn.BorderSizePixel = 0
+    execBtn.Text = "Executor"
+    execBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+    execBtn.Font = Enum.Font.Code
+    execBtn.TextSize = 11
+    execBtn.LayoutOrder = 999
+    execBtn.Parent = self.NavFrame
+    
+    local exStroke = Instance.new("UIStroke")
+    exStroke.Thickness = 1
+    exStroke.Color = Color3.fromRGB(80, 80, 80)
+    exStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    exStroke.Parent = execBtn
+    table.insert(window.TabButtons, execBtn)
+
+    local execPage = Instance.new("Frame")
+    execPage.Size = UDim2.new(1, -12, 1, -12)
+    execPage.Position = UDim2.new(0, 6, 0, 6)
+    execPage.BackgroundTransparency = 1
+    execPage.Visible = false
+    execPage.Parent = self.Container
+    table.insert(window.Pages, execPage)
+    
+    local execScroll = Instance.new("ScrollingFrame")
+    execScroll.Size = UDim2.new(1, 0, 1, -34)
+    execScroll.BackgroundTransparency = 1
+    execScroll.BorderSizePixel = 0
+    execScroll.ClipsDescendants = true
+    execScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    execScroll.AutomaticSize = Enum.AutomaticSize.Y
+    execScroll.ScrollBarThickness = 2
+    execScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+    execScroll.Parent = execPage
+
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(1, 0, 1, 0)
+    textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    textBox.BorderSizePixel = 0
+    textBox.ClearTextOnFocus = false
+    textBox.MultiLine = true
+    textBox.Text = "-- Code execution lines..."
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.Font = Enum.Font.Code
+    textBox.TextSize = 10
+    textBox.TextXAlignment = Enum.TextXAlignment.Left
+    textBox.TextYAlignment = Enum.TextYAlignment.Top
+    textBox.TextWrapped = true
+    textBox.Parent = execScroll
+    
+    local tStroke = Instance.new("UIStroke")
+    tStroke.Thickness = 1
+    tStroke.Color = Color3.fromRGB(255, 255, 255)
+    tStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    tStroke.Parent = execScroll
+    
+    local runBtn = Instance.new("TextButton")
+    runBtn.Size = UDim2.new(0.5, -3, 0, 28)
+    runBtn.Position = UDim2.new(0, 0, 1, -28)
+    runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    runBtn.BorderSizePixel = 0
+    runBtn.Text = "Execute"
+    runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    runBtn.Font = Enum.Font.Code
+    runBtn.TextSize = 11
+    runBtn.Parent = execPage
+    
+    local rbStroke = Instance.new("UIStroke")
+    rbStroke.Thickness = 1
+    rbStroke.Color = Color3.fromRGB(255, 255, 255)
+    rbStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    rbStroke.Parent = runBtn
+    
+    local clearBtn = Instance.new("TextButton")
+    clearBtn.Size = UDim2.new(0.5, -3, 0, 28)
+    clearBtn.Position = UDim2.new(0.5, 3, 1, -28)
+    clearBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    clearBtn.BorderSizePixel = 0
+    clearBtn.Text = "Clear"
+    clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    clearBtn.Font = Enum.Font.Code
+    clearBtn.TextSize = 11
+    clearBtn.Parent = execPage
+    
+    local cbStroke = Instance.new("UIStroke")
+    cbStroke.Thickness = 1
+    cbStroke.Color = Color3.fromRGB(255, 255, 255)
+    cbStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    cbStroke.Parent = clearBtn
+    
+    runBtn.MouseButton1Click:Connect(function()
+        local code = textBox.Text
+        if code and code ~= "" then
+            local func, err = loadstring(code)
+            if func then task.spawn(func) end
+        end
+    end)
+    
+    clearBtn.MouseButton1Click:Connect(function()
+        textBox.Text = ""
+    end)
+
+    execBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(window.Pages) do p.Visible = false end
+        for _, b in pairs(window.TabButtons) do 
+            b.TextColor3 = Color3.fromRGB(130, 130, 130)
+            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
+        end
+        execPage.Visible = true
+        execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        execBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    end)
+end
+
+function CozyUI:CreateNativeInfo()
+    local window = self
+    
+    local infoBtn = Instance.new("TextButton")
+    infoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    infoBtn.BorderSizePixel = 0
+    infoBtn.Text = "Info"
+    infoBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+    infoBtn.Font = Enum.Font.Code
+    infoBtn.TextSize = 11
+    infoBtn.LayoutOrder = 998
+    infoBtn.Parent = self.NavFrame
+    
+    local infStroke = Instance.new("UIStroke")
+    infStroke.Thickness = 1
+    infStroke.Color = Color3.fromRGB(80, 80, 80)
+    infStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    infStroke.Parent = infoBtn
+    table.insert(window.TabButtons, infoBtn)
+
+    local infoPage = Instance.new("Frame")
+    infoPage.Size = UDim2.new(1, -12, 1, -12)
+    infoPage.Position = UDim2.new(0, 6, 0, 6)
+    infoPage.BackgroundTransparency = 1
+    infoPage.Visible = false
+    infoPage.Parent = self.Container
+    table.insert(window.Pages, infoPage)
+
+    local viewport = Instance.new("ViewportFrame")
+    viewport.Size = UDim2.new(1, 0, 1, 0)
+    viewport.Position = UDim2.new(0, 0, 0, 0)
+    viewport.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    viewport.BorderSizePixel = 0
+    viewport.Parent = infoPage
+    
+    local vStroke = Instance.new("UIStroke")
+    vStroke.Thickness = 1
+    vStroke.Color = Color3.fromRGB(255, 255, 255)
+    vStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    vStroke.Parent = viewport
+    
+    task.spawn(function()
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        char.Archivable = true
+        task.wait(0.5)
+        local clone = char:Clone()
+        clone.Parent = viewport
+        
+        local hrp = clone:WaitForChild("HumanoidRootPart")
+        local cam = Instance.new("Camera")
+        viewport.CurrentCamera = cam
+        cam.Parent = viewport
+        
+        local rotAngle = 0
+        game:GetService("RunService").Heartbeat:Connect(function()
+            rotAngle = rotAngle + 1
+            cam.CFrame = CFrame.new(hrp.Position + Vector3.new(math.sin(math.rad(rotAngle)) * 5, 2, math.cos(math.rad(rotAngle)) * 5), hrp.Position)
+        end)
+    end)
+
+    infoBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(window.Pages) do p.Visible = false end
+        for _, b in pairs(window.TabButtons) do 
+            b.TextColor3 = Color3.fromRGB(130, 130, 130)
+            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
+        end
+        infoPage.Visible = true
+        infoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        infoBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    end)
+end
+
+return CozyUI
+local CozyUI = CozyUI or {}
+
+function CozyUI:LoadPart2()
+    local sg = self.ScreenGui
+    if sg then
+        local success, err = pcall(function()
+            if not sg.Parent then
+                local p = (pcall(function() return gethui() end) and gethui()) or CoreGui
+                sg.Parent = p
+            end
+        end)
+        if not success then
+            sg.Parent = CoreGui
+        end
+    end
+
+    local mainFrame = self.MainFrame
+    if not mainFrame then return end
+
+    local navFrame = self.NavFrame
+    local container = self.Container
+
+    local settingsBtn = Instance.new("TextButton")
+    settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    settingsBtn.BorderSizePixel = 0
+    settingsBtn.Text = "Settings"
+    settingsBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+    settingsBtn.Font = Enum.Font.Code
+    settingsBtn.TextSize = 11
+    settingsBtn.LayoutOrder = 997
+    settingsBtn.Parent = navFrame
+    
+    local sStroke = Instance.new("UIStroke")
+    sStroke.Thickness = 1
+    sStroke.Color = Color3.fromRGB(80, 80, 80)
+    sStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    sStroke.Parent = settingsBtn
+    
+    table.insert(self.TabButtons, settingsBtn)
+
+    local settingsPage = Instance.new("Frame")
+    settingsPage.Size = UDim2.new(1, -12, 1, -12)
+    settingsPage.Position = UDim2.new(0, 6, 0, 6)
+    settingsPage.BackgroundTransparency = 1
+    settingsPage.Visible = false
+    settingsPage.Parent = container
+    table.insert(self.Pages, settingsPage)
+
+    local setScroll = Instance.new("ScrollingFrame")
+    setScroll.Size = UDim2.new(1, 0, 1, 0)
+    setScroll.BackgroundTransparency = 1
+    setScroll.BorderSizePixel = 0
+    setScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    setScroll.AutomaticSize = Enum.AutomaticSize.Y
+    setScroll.ScrollBarThickness = 2
+    setScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+    setScroll.Parent = settingsPage
+
+    local setList = Instance.new("UIListLayout")
+    setList.Padding = UDim.new(0, 8)
+    setList.Parent = setScroll
+
+    local function addHeader(txt)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, -4, 0, 24)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = txt
+        lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+        lbl.Font = Enum.Font.Code
+        lbl.TextSize = 11
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = setScroll
+    end
+
+    addHeader("-- THEME COLOR CONFIG --")
+
+    local colors = {
+        {"White Theme", Color3.fromRGB(255, 255, 255)},
+        {"Green Theme", Color3.fromRGB(0, 255, 100)},
+        {"Red Theme", Color3.fromRGB(255, 50, 50)},
+        {"Blue Theme", Color3.fromRGB(50, 150, 255)}
+    }
+
+    for _, colData in ipairs(colors) do
+        local cBtn = Instance.new("TextButton")
+        cBtn.Size = UDim2.new(1, -4, 0, 26)
+        cBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        cBtn.BorderSizePixel = 0
+        cBtn.Text = colData[1]
+        cBtn.TextColor3 = colData[2]
+        cBtn.Font = Enum.Font.Code
+        cBtn.TextSize = 11
+        cBtn.Parent = setScroll
+
+        local cSt = Instance.new("UIStroke")
+        cSt.Thickness = 1
+        cSt.Color = colData[2]
+        cSt.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        cSt.Parent = cBtn
+
+        cBtn.MouseButton1Click:Connect(function()
+            local targetCol = colData[2]
+            local function updateStrokes(parentObj)
+                for _, descendant in ipairs(parentObj:GetDescendants()) do
+                    if descendant:IsA("UIStroke") and descendant.Color ~= Color3.fromRGB(80, 80, 80) then
+                        descendant.Color = targetCol
+                    end
+                end
+            end
+            updateStrokes(mainFrame)
+        end)
+    end
+
+    addHeader("-- DYNAMIC TAB CREATOR --")
+
+    local tabNameBox = Instance.new("TextBox")
+    tabNameBox.Size = UDim2.new(1, -4, 0, 28)
+    tabNameBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabNameBox.BorderSizePixel = 0
+    tabNameBox.ClearTextOnFocus = false
+    tabNameBox.Text = "New Tab Name"
+    tabNameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tabNameBox.Font = Enum.Font.Code
+    tabNameBox.TextSize = 11
+    tabNameBox.Parent = setScroll
+
+    local tnStroke = Instance.new("UIStroke")
+    tnStroke.Thickness = 1
+    tnStroke.Color = Color3.fromRGB(255, 255, 255)
+    tnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    tnStroke.Parent = tabNameBox
+
+    local addTabBtn = Instance.new("TextButton")
+    addTabBtn.Size = UDim2.new(1, -4, 0, 28)
+    addTabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    addTabBtn.BorderSizePixel = 0
+    addTabBtn.Text = "Create Custom Tab"
+    addTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    addTabBtn.Font = Enum.Font.Code
+    addTabBtn.TextSize = 11
+    addTabBtn.Parent = setScroll
+
+    local atStroke = Instance.new("UIStroke")
+    atStroke.Thickness = 1
+    atStroke.Color = Color3.fromRGB(255, 255, 255)
+    atStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    atStroke.Parent = addTabBtn
+
+    addHeader("-- DYNAMIC SCRIPT INJECTOR --")
+
+    local targetTabBox = Instance.new("TextBox")
+    targetTabBox.Size = UDim2.new(1, -4, 0, 28)
+    targetTabBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    targetTabBox.BorderSizePixel = 0
+    targetTabBox.ClearTextOnFocus = false
+    targetTabBox.Text = "Target Tab Name"
+    targetTabBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    targetTabBox.Font = Enum.Font.Code
+    targetTabBox.TextSize = 11
+    targetTabBox.Parent = setScroll
+
+    local ttStroke = Instance.new("UIStroke")
+    ttStroke.Thickness = 1
+    ttStroke.Color = Color3.fromRGB(255, 255, 255)
+    ttStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    ttStroke.Parent = targetTabBox
+
+    local scriptNameBox = Instance.new("TextBox")
+    scriptNameBox.Size = UDim2.new(1, -4, 0, 28)
+    scriptNameBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    scriptNameBox.BorderSizePixel = 0
+    scriptNameBox.ClearTextOnFocus = false
+    scriptNameBox.Text = "Button Name"
+    scriptNameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    scriptNameBox.Font = Enum.Font.Code
+    scriptNameBox.TextSize = 11
+    scriptNameBox.Parent = setScroll
+
+    local snStroke = Instance.new("UIStroke")
+    snStroke.Thickness = 1
+    snStroke.Color = Color3.fromRGB(255, 255, 255)
+    snStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    snStroke.Parent = scriptNameBox
+
+    local loadstringBox = Instance.new("TextBox")
+    loadstringBox.Size = UDim2.new(1, -4, 0, 28)
+    loadstringBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    loadstringBox.BorderSizePixel = 0
+    loadstringBox.ClearTextOnFocus = false
+    loadstringBox.Text = "Enter loadstring here..."
+    loadstringBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    loadstringBox.Font = Enum.Font.Code
+    loadstringBox.TextSize = 11
+    loadstringBox.Parent = setScroll
+
+    local lsStroke = Instance.new("UIStroke")
+    lsStroke.Thickness = 1
+    lsStroke.Color = Color3.fromRGB(255, 255, 255)
+    lsStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    lsStroke.Parent = loadstringBox
+
+    local addScriptBtn = Instance.new("TextButton")
+    addScriptBtn.Size = UDim2.new(1, -4, 0, 28)
+    addScriptBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    addScriptBtn.BorderSizePixel = 0
+    addScriptBtn.Text = "Inject Script Button"
+    addScriptBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    addScriptBtn.Font = Enum.Font.Code
+    addScriptBtn.TextSize = 11
+    addScriptBtn.Parent = setScroll
+
+    local asStroke = Instance.new("UIStroke")
+    asStroke.Thickness = 1
+    asStroke.Color = Color3.fromRGB(255, 255, 255)
+    asStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    asStroke.Parent = addScriptBtn
+
+    local createdTabs = {}
+
+    addTabBtn.MouseButton1Click:Connect(function()
+        local name = tabNameBox.Text
+        if name and name ~= "" and not createdTabs[name] then
+            local newTabObj = self:CreateTab(name)
+            createdTabs[name] = newTabObj
+            tabNameBox.Text = "Created!"
+            task.wait(1)
+            tabNameBox.Text = "New Tab Name"
+        end
+    end)
+
+    addScriptBtn.MouseButton1Click:Connect(function()
+        local tName = targetTabBox.Text
+        local sName = scriptNameBox.Text
+        local code = loadstringBox.Text
+        if createdTabs[tName] and sName ~= "" and code ~= "" then
+            createdTabs[tName]:CreateButton(sName, function()
+                local f, err = loadstring(code)
+                if f then task.spawn(f) end
+            end)
+            loadstringBox.Text = "Injected!"
+            task.wait(1)
+            loadstringBox.Text = "Enter loadstring here..."
+        end
+    end)
+
+    settingsBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(self.Pages) do p.Visible = false end
+        for _, b in pairs(self.TabButtons) do 
+            b.TextColor3 = Color3.fromRGB(130, 130, 130)
+            b.UIStroke.Color = Color3.fromRGB(80, 80, 80)
+        end
+        settingsPage.Visible = true
+        settingsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        settingsBtn.UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    end)
+
+    if self.AdjustLayoutSizes then
+        self.AdjustLayoutSizes()
+    end
+end
+
+return CozyUI
+
